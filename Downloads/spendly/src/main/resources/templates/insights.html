@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Insights</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Intelligence</span>
+            <h1>Insights &amp; <b>forecast</b></h1>
+            <p th:text="|How ${@fmt.month(month)} is likely to end, and what needs your attention.|">How the month will end</p>
+        </div>
+    </div>
+
+    <div class="kpis">
+        <div class="card kpi"><div class="label">Projected income</div><div class="value" th:text="${@fmt.whole(f.projectedIncome)}">0</div>
+            <div class="sub" th:text="|${@fmt.whole(f.pendingIncome)} still to come|">to come</div></div>
+        <div class="card kpi" th:classappend="${f.projectedNet.signum() < 0} ? 'danger'"><div class="label">Projected spending</div><div class="value" th:text="${@fmt.whole(f.projectedExpense)}">0</div>
+            <div class="sub" th:text="|${@fmt.whole(f.expenseSoFar)} spent so far|">so far</div></div>
+        <div class="card kpi" th:classappend="${f.projectedSavingsRate < currentUser.savingsTargetPercent} ? 'warning'"><div class="label">Projected savings</div><div class="value" th:text="${@fmt.whole(f.projectedNet)}">0</div>
+            <div class="sub" th:text="|${f.projectedSavingsRate}% of income · target ${currentUser.savingsTargetPercent}%|">rate</div></div>
+        <div class="card kpi" th:classappend="${f.monthEndBalance.signum() < 0} ? 'danger'"><div class="label">Month-end balance</div><div class="value" th:text="${@fmt.whole(f.monthEndBalance)}">0</div>
+            <div class="sub" th:text="|${@fmt.whole(f.balanceNow)} today|">today</div></div>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-head"><h2>Spending <b>pace</b></h2><span class="sub">Running total this month vs your usual month</span></div>
+            <div class="card-body"><div class="chart-box tall"><canvas id="paceChart" role="img" aria-label="Cumulative spending this month against the usual pace"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-head"><h2>How we <b>got there</b></h2></div>
+            <div class="card-body forecast">
+                <dl class="lines-list">
+                    <div><dt>Spent so far</dt><dd th:text="${@fmt.whole(f.expenseSoFar)}">0</dd></div>
+                    <div><dt>Bills still due this month</dt><dd th:text="${@fmt.whole(f.pendingBills)}">0</dd></div>
+                    <div><dt th:text="|Day-to-day for ${f.daysLeft} more days|">Day-to-day</dt><dd th:text="${@fmt.whole(f.variableToCome)}">0</dd></div>
+                    <div class="total"><dt>Projected spending</dt><dd th:text="${@fmt.whole(f.projectedExpense)}">0</dd></div>
+                </dl>
+                <p class="muted" style="margin:0;font-size:13px" th:text="|Day-to-day spending is running at about ${@fmt.whole(f.dailyRate)} a day, blended with your last three months early in the month.|">pace</p>
+                <dl class="lines-list">
+                    <div><dt>Projected income</dt><dd th:text="${@fmt.whole(f.projectedIncome)}">0</dd></div>
+                    <div><dt th:text="|Savings target (${currentUser.savingsTargetPercent}%)|">Savings target</dt><dd th:text="${@fmt.whole(f.savingsTarget)}">0</dd></div>
+                    <div class="total"><dt>Safe to spend</dt><dd th:text="|${@fmt.whole(f.safeToSpend)} · ${@fmt.whole(f.safePerDay)}/day|">0</dd></div>
+                </dl>
+                <a class="btn sm" th:href="@{/account}" style="justify-self:start">Change savings target</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-head"><h2>What needs <b>attention</b></h2><span class="sub" th:text="|${#lists.size(insights)} insights|">0</span></div>
+        <ul class="alert-list">
+            <li class="alert-item" th:each="i : ${insights}">
+                <span class="dot" th:classappend="${i.severity}"></span>
+                <div class="body">
+                    <div class="type" th:text="${i.type}">Budget</div>
+                    <div class="title" th:text="${i.title}">Title</div>
+                    <div class="msg" th:text="${i.message}">Message</div>
+                </div>
+                <a class="btn sm" th:if="${i.link}" th:href="@{${i.link}}" th:text="${i.linkLabel}">Open</a>
+            </li>
+            <li class="empty" th:if="${#lists.isEmpty(insights)}">Record a few transactions and Spendly will start spotting patterns.</li>
+        </ul>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script th:inline="javascript">
+        (function () {
+            if (!window.Chart) return;
+            Chart.defaults.font.family = 'Onest, Arial, sans-serif';
+            Chart.defaults.color = '#8a5a3c';
+            const symbol = /*[[${@fmt.symbol()}]]*/ '₹';
+            const money = v => symbol + Math.round(v).toLocaleString(symbol === '₹' ? 'en-IN' : 'en-US');
+            const days = /*[[${f.daysInMonth}]]*/ 30;
+            const actual = /*[[${pace}]]*/ [];
+            const usual = /*[[${usual.expense}]]*/ 0;
+            const projected = /*[[${f.projectedExpense}]]*/ 0;
+            const labels = Array.from({length: days}, (_, i) => i + 1);
+            const last = actual.length ? actual[actual.length - 1] : 0;
+            const forecast = labels.map((d, i) => i < actual.length - 1 ? null : (i === actual.length - 1 ? last : last + (projected - last) * (d - actual.length) / (days - actual.length)));
+            const datasets = [
+                {label: 'Spent so far', data: actual, borderColor: '#b5562a', backgroundColor: 'rgba(245,200,163,.45)', fill: true, tension: .25, pointRadius: 0, borderWidth: 2.5},
+                {label: 'Forecast', data: forecast, borderColor: '#b5562a', borderDash: [6, 6], pointRadius: 0, borderWidth: 2, fill: false}
+            ];
+            if (usual > 0) {
+                datasets.push({label: 'Usual month', data: labels.map(d => usual * d / days), borderColor: '#8fb3d9', pointRadius: 0, borderWidth: 2, fill: false});
+            }
+            new Chart(document.getElementById('paceChart'), {
+                type: 'line',
+                data: {labels: labels, datasets: datasets},
+                options: {
+                    maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
+                    plugins: {legend: {position: 'bottom'}, tooltip: {callbacks: {title: i => 'Day ' + i[0].label, label: c => c.parsed.y == null ? null : c.dataset.label + ': ' + money(c.parsed.y)}}},
+                    scales: {x: {grid: {display: false}, ticks: {maxTicksLimit: 10}}, y: {beginAtZero: true, grid: {color: '#f9e7d8'}, ticks: {callback: v => money(v)}}}
+                }
+            });
+        })();
+    </script>
+</th:block>
+</body>
+</html>

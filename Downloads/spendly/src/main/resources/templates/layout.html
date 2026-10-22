@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="$CONTENT_TITLE - Spendly">Spendly</title>
+    <link rel="icon" th:replace="~{fragments :: favicon}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <th:block layout:fragment="head"></th:block>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <a class="brand" th:href="@{/dashboard}">
+            <div><span class="brand-word">spend<b>ly</b></span><small>Budget planner</small></div>
+        </a>
+        <ul class="nav">
+            <li class="nav-label">Overview</li>
+            <li><a th:href="@{/dashboard}" th:classappend="${currentPath == '/dashboard'} ? 'active'">
+                <svg th:replace="~{fragments :: icon('home')}"></svg>Dashboard</a></li>
+            <li><a th:href="@{/health}" th:classappend="${currentPath == '/health'} ? 'active'">
+                <svg th:replace="~{fragments :: icon('heart')}"></svg>Health score</a></li>
+
+            <li class="nav-label">Money</li>
+            <li><a th:href="@{/transactions}" th:classappend="${#strings.startsWith(currentPath, '/transactions')} ? 'active'">
+                <svg th:replace="~{fragments :: icon('list')}"></svg>Transactions</a></li>
+            <li><a th:href="@{/accounts}" th:classappend="${#strings.startsWith(currentPath, '/accounts')} ? 'active'">
+                <svg th:replace="~{fragments :: icon('wallet')}"></svg>Accounts</a></li>
+
+            <li class="nav-label">Planning</li>
+            <li><a th:href="@{/budgets}" th:classappend="${#strings.startsWith(currentPath, '/budgets')} ? 'active'">
+                <svg th:replace="~{fragments :: icon('pie')}"></svg>Budgets</a></li>
+            <li><a th:href="@{/recurring}" th:classappend="${#strings.startsWith(currentPath, '/recurring')} ? 'active'">
+                <svg th:replace="~{fragments :: icon('repeat')}"></svg>Bills &amp; recurring</a></li>
+            <li><a th:href="@{/goals}" th:classappend="${#strings.startsWith(currentPath, '/goals')} ? 'active'">
+                <svg th:replace="~{fragments :: icon('target')}"></svg>Savings goals</a></li>
+
+            <li class="nav-label">Intelligence</li>
+            <li><a th:href="@{/insights}" th:classappend="${currentPath == '/insights'} ? 'active'">
+                <svg th:replace="~{fragments :: icon('spark')}"></svg>Insights
+                <span class="count" th:if="${alertCount > 0}" th:text="${alertCount}">0</span></a></li>
+            <li><a th:href="@{/reports}" th:classappend="${#strings.startsWith(currentPath, '/reports')} ? 'active'">
+                <svg th:replace="~{fragments :: icon('chart')}"></svg>Reports</a></li>
+
+            <li class="nav-label">Organise</li>
+            <li><a th:href="@{/categories}" th:classappend="${#strings.startsWith(currentPath, '/categories')} ? 'active'">
+                <svg th:replace="~{fragments :: icon('tag')}"></svg>Categories</a></li>
+            <li><a th:href="@{/account}" th:classappend="${currentPath == '/account'} ? 'active'">
+                <svg th:replace="~{fragments :: icon('user')}"></svg>My account</a></li>
+        </ul>
+        <div class="sidebar-foot">Every rupee, a plan.</div>
+    </aside>
+
+    <div class="main">
+        <header class="topbar">
+            <div class="actions">
+                <button class="btn sm menu-toggle" type="button" data-menu-toggle aria-label="Menu">
+                    <svg th:replace="~{fragments :: icon('menu')}" width="16" height="16"></svg>
+                </button>
+                <span class="company" th:text="${#temporals.format(#temporals.createNow(), 'EEEE, dd MMMM yyyy')}">Today</span>
+            </div>
+            <div class="user" th:if="${currentUser != null}">
+                <a class="btn sm primary hide-sm" th:href="@{/transactions/new}">
+                    <svg th:replace="~{fragments :: icon('plus')}"></svg>Add transaction</a>
+                <a th:href="@{/account}" class="user-meta" style="color:inherit">
+                    <strong th:text="${currentUser.fullName}">Name</strong>
+                    <small th:text="${currentUser.username}">username</small>
+                </a>
+                <div class="avatar" th:text="${@fmt.initials(currentUser.fullName)}">A</div>
+                <form th:action="@{/logout}" method="post" class="inline-form">
+                    <button class="btn sm" type="submit">Sign out</button>
+                </form>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="flash success" th:if="${success}" th:text="${success}"></div>
+            <div class="flash error" th:if="${error}" th:text="${error}"></div>
+            <div layout:fragment="content"></div>
+        </main>
+    </div>
+</div>
+<script th:src="@{/js/app.js}"></script>
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>

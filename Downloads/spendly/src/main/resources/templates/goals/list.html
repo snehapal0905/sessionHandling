@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Savings goals</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Planning</span>
+            <h1>Savings <b>goals</b></h1>
+            <p>Name it, give it a date, and Spendly works out what to put aside each month.</p>
+        </div>
+        <div class="actions"><a class="btn primary" th:href="@{/goals/new}">New goal</a></div>
+    </div>
+
+    <div class="grid grid-3" style="margin-bottom:20px">
+        <div class="card kpi"><div class="label">Saved so far</div><div class="value" th:text="${@fmt.whole(totalSaved)}">0</div>
+            <div class="sub" th:text="|of ${@fmt.whole(totalTarget)} across ${#lists.size(goals)} goals|">of</div></div>
+        <div class="card kpi"><div class="label">Put aside each month</div><div class="value" th:text="${@fmt.whole(monthlyNeeded)}">0</div><div class="sub">To hit every dated goal on time</div></div>
+        <div class="card kpi"><div class="label">Still to save</div><div class="value" th:text="${@fmt.whole(@fmt.atLeastZero(totalTarget.subtract(totalSaved)))}">0</div><div class="sub">Across open goals</div></div>
+    </div>
+
+    <div class="goals">
+        <div class="card goal" th:each="g : ${goals}">
+            <div class="goal-arch" th:style="|--c:${g.color}|" aria-hidden="true"><span th:style="|height:${g.percent}%|"></span><b th:text="|${g.percent}%|">0%</b></div>
+            <div>
+                <h3 th:text="${g.name}">Goal</h3>
+                <div class="meta" th:text="${g.complete} ? 'Reached - well done!' : (${g.targetDate != null} ? |By ${@fmt.date(g.targetDate)} · ${@fmt.whole(g.monthlyNeeded(today))} a month| : 'No deadline')">By</div>
+            </div>
+            <div class="figures"><span><b th:text="${@fmt.whole(g.savedAmount)}">0</b> saved</span><span class="muted" th:text="|of ${@fmt.whole(g.targetAmount)}|">of</span></div>
+            <div class="progress"><span th:style="|width:${g.percent}%;background:${g.color}|"></span></div>
+            <p class="muted" style="margin:0;font-size:13px" th:if="${g.notes}" th:text="${g.notes}"></p>
+            <form th:action="@{/goals/{id}/contribute(id=${g.id})}" method="post">
+                <div class="money-input"><span th:text="${@fmt.symbol()}">₹</span><input type="number" name="amount" min="1" step="1" placeholder="Amount" required th:attr="aria-label=|Amount for ${g.name}|"></div>
+                <button class="btn sm primary" type="submit" name="action" value="add">Add</button>
+                <button class="btn sm" type="submit" name="action" value="withdraw">Take out</button>
+            </form>
+            <div class="btn-row" style="justify-content:flex-start"><a class="btn sm link" th:href="@{/goals/{id}/edit(id=${g.id})}">Edit goal</a></div>
+        </div>
+        <a class="card goal empty-state" th:href="@{/goals/new}" style="color:inherit">
+            <div class="arches" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <strong>Start a new goal</strong>
+            <p>An emergency fund, a trip, a laptop, a deposit.</p>
+        </a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title th:text="${form.new ? 'Add account' : 'Edit account'}">Account</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Money</span>
+            <h1 th:utext="${form.new} ? 'Add an <b>account</b>' : 'Edit <b>account</b>'">Add an account</h1>
+        </div>
+    </div>
+    <div class="grid grid-form">
+        <form class="card" th:action="@{/accounts/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="card-body form-grid">
+                <div class="field full"><label for="name">Name</label><input type="text" th:field="*{name}" placeholder="e.g. HDFC Savings" maxlength="80"><div class="err" th:errors="*{name}"></div></div>
+                <div class="field"><label for="type">Type</label>
+                    <select th:field="*{type}"><option th:each="t : ${types}" th:value="${t}" th:text="${t.label}">Bank</option></select>
+                    <div class="err" th:errors="*{type}"></div></div>
+                <div class="field"><label for="institution">Bank or provider <span class="muted" style="text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" th:field="*{institution}" maxlength="80"></div>
+                <div class="field"><label for="openingBalance">Opening balance</label>
+                    <div class="money-input"><span th:text="${@fmt.symbol()}">₹</span><input type="number" step="0.01" id="openingBalance" name="openingBalance" th:value="${@fmt.plain(form.openingBalance)}"></div>
+                    <div class="hint">The balance on the day you start tracking. For a credit card, enter what you owe as a negative number.</div>
+                    <div class="err" th:errors="*{openingBalance}"></div></div>
+                <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" th:field="*{active}"> Active (shown in forms and totals)</label></div>
+            </div>
+            <div class="card-body form-actions form-foot">
+                <a class="btn" th:href="@{/accounts}">Cancel</a>
+                <button class="btn primary" type="submit">Save account</button>
+            </div>
+        </form>
+        <div>
+            <form class="card" th:unless="${form.new}" th:action="@{/accounts/{id}/delete(id=${form.id})}" method="post" data-confirm="Delete this account?">
+                <div class="card-body">
+                    <h3>Delete</h3>
+                    <p class="muted">Only accounts with no transactions can be deleted. Archive the others to hide them while keeping their history.</p>
+                    <button class="btn danger" type="submit">Delete account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

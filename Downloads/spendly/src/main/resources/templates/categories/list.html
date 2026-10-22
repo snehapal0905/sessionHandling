@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Categories</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Organise</span>
+            <h1>Cate<b>gories</b></h1>
+            <p>How your money is sorted. Mark expense categories as needs or wants to see the split in Reports.</p>
+        </div>
+        <div class="actions">
+            <a class="btn" th:href="@{/categories/new(kind='INCOME')}">New income category</a>
+            <a class="btn primary" th:href="@{/categories/new(kind='EXPENSE')}">New expense category</a>
+        </div>
+    </div>
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-head"><h2>Expense <b>categories</b></h2><span class="sub" th:text="|${#lists.size(expense)} categories|">0</span></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Name</th><th>Kind</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                    <tr th:each="c : ${expense}">
+                        <td><span th:replace="~{fragments :: category(${c})}"></span></td>
+                        <td><span class="badge" th:classappend="${c.essential} ? 'info' : 'warning'" th:text="${c.essential} ? 'Need' : 'Want'">Need</span></td>
+                        <td><span class="badge" th:classappend="${c.active} ? 'success' : 'muted'" th:text="${c.active} ? 'Active' : 'Archived'">Active</span></td>
+                        <td class="right"><div class="btn-row">
+                            <a class="btn sm" th:href="@{/transactions(category=${c.id})}">History</a>
+                            <a class="btn sm" th:href="@{/categories/{id}/edit(id=${c.id})}">Edit</a></div></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-head"><h2>Income <b>categories</b></h2></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Name</th><th></th></tr></thead>
+                    <tbody>
+                    <tr th:each="c : ${income}">
+                        <td><span th:replace="~{fragments :: category(${c})}"></span>
+                            <span class="sub" th:unless="${c.active}">Archived</span></td>
+                        <td class="right"><a class="btn sm" th:href="@{/categories/{id}/edit(id=${c.id})}">Edit</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

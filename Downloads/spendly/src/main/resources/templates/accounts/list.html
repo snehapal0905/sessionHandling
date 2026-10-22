@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Accounts</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Money</span>
+            <h1>Your <b>accounts</b></h1>
+            <p>Bank accounts, cash, wallets, cards and savings. Balances update from every transaction and transfer.</p>
+        </div>
+        <div class="actions">
+            <a class="btn" th:href="@{/transactions/new(type='TRANSFER')}">Move money</a>
+            <a class="btn primary" th:href="@{/accounts/new}">Add account</a>
+        </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-bottom:20px">
+        <div class="card kpi"><div class="label">Total balance</div><div class="value" th:text="${@fmt.whole(b.total)}">0</div><div class="sub">Everything, minus what you owe on cards</div></div>
+        <div class="card kpi"><div class="label">Ready to spend</div><div class="value" th:text="${@fmt.whole(b.liquid)}">0</div><div class="sub">Bank, cash, wallets and savings</div></div>
+        <div class="card kpi" th:classappend="${b.creditOwed.signum() > 0} ? 'warning'"><div class="label">Owed on cards</div><div class="value" th:text="${@fmt.whole(b.creditOwed)}">0</div><div class="sub">Credit card balances</div></div>
+    </div>
+
+    <div class="accounts">
+        <div class="card account" th:each="ab : ${b.accounts}" th:classappend="${!ab.account.active} ? 'archived'">
+            <span class="type" th:text="${ab.account.institution != null} ? |${ab.account.type.label} · ${ab.account.institution}| : ${ab.account.type.label}">Bank</span>
+            <span class="name" th:text="${ab.account.name}">HDFC</span>
+            <span class="bal" th:classappend="${ab.balance.signum() < 0} ? 'neg'" th:text="${@fmt.money(ab.balance)}">0</span>
+            <span class="muted" style="font-size:12px" th:if="${!ab.account.active}">Archived</span>
+            <div class="btn-row">
+                <a class="btn sm" th:href="@{/transactions(account=${ab.account.id})}">History</a>
+                <a class="btn sm" th:href="@{/accounts/{id}/edit(id=${ab.account.id})}">Edit</a>
+                <form th:action="@{/accounts/{id}/toggle(id=${ab.account.id})}" method="post" class="inline-form">
+                    <button class="btn sm" type="submit" th:text="${ab.account.active} ? 'Archive' : 'Restore'">Archive</button>
+                </form>
+            </div>
+        </div>
+        <a class="card account empty-state" th:href="@{/accounts/new}" style="color:inherit;padding:24px">
+            <div class="arches" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <strong>Add an account</strong>
+            <p>Another bank, a credit card, a wallet or an investment.</p>
+        </a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title th:text="${form.new ? 'Add recurring item' : 'Edit recurring item'}">Recurring</title></head>
+<body>
+<div layout:fragment="content" th:with="t=${form.type.name()}">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Planning</span>
+            <h1 th:utext="${form.new} ? 'Something that <b>repeats</b>' : 'Edit <b>recurring item</b>'">Something that repeats</h1>
+            <p>Spendly reminds you when it is due and counts it in the month-end forecast.</p>
+        </div>
+    </div>
+    <div class="grid grid-form">
+        <form class="card" th:action="@{/recurring/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="card-body">
+                <div class="segmented" data-type-switch role="radiogroup" aria-label="Type">
+                    <input type="radio" id="type-EXPENSE" name="type" value="EXPENSE" th:checked="${t == 'EXPENSE'}"><label for="type-EXPENSE">Bill / expense</label>
+                    <input type="radio" id="type-INCOME" name="type" value="INCOME" th:checked="${t == 'INCOME'}"><label for="type-INCOME">Income</label>
+                </div>
+            </div>
+            <div class="card-body form-grid" style="padding-top:0">
+                <div class="field full"><label for="name">Name</label><input type="text" th:field="*{name}" maxlength="80" placeholder="e.g. Netflix, House rent, Salary"><div class="err" th:errors="*{name}"></div></div>
+                <div class="field"><label for="amount">Amount</label>
+                    <div class="money-input"><span th:text="${@fmt.symbol()}">₹</span><input type="number" step="0.01" min="0.01" id="amount" name="amount" th:value="${@fmt.plain(form.amount)}" required></div>
+                    <div class="err" th:errors="*{amount}"></div></div>
+                <div class="field"><label for="frequency">Every</label>
+                    <select th:field="*{frequency}"><option th:each="fr : ${frequencies}" th:value="${fr}" th:text="${fr.label}">Monthly</option></select></div>
+                <div class="field" data-show-for="EXPENSE" th:hidden="${t != 'EXPENSE'}"><label for="expenseCategory">Category</label>
+                    <select id="expenseCategory" name="categoryId" th:disabled="${t != 'EXPENSE'}">
+                        <option value="">Choose a category</option>
+                        <option th:each="c : ${expenseCategories}" th:value="${c.id}" th:text="${c.name}" th:selected="${c.id == form.categoryId}">Bills</option>
+                    </select><div class="err" th:errors="*{categoryId}"></div></div>
+                <div class="field" data-show-for="INCOME" th:hidden="${t != 'INCOME'}"><label for="incomeCategory">Category</label>
+                    <select id="incomeCategory" name="categoryId" th:disabled="${t != 'INCOME'}">
+                        <option value="">Choose a category</option>
+                        <option th:each="c : ${incomeCategories}" th:value="${c.id}" th:text="${c.name}" th:selected="${c.id == form.categoryId}">Salary</option>
+                    </select><div class="err" th:errors="*{categoryId}"></div></div>
+                <div class="field"><label for="accountId">Account</label>
+                    <select th:field="*{accountId}"><option th:each="a : ${accounts}" th:value="${a.id}" th:text="|${a.name} · ${a.type.label}|">Bank</option></select>
+                    <div class="err" th:errors="*{accountId}"></div></div>
+                <div class="field"><label for="nextDueDate">Next due</label><input type="date" th:field="*{nextDueDate}"><div class="err" th:errors="*{nextDueDate}"></div></div>
+                <div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" th:field="*{active}"> Active</label></div>
+            </div>
+            <div class="card-body form-actions form-foot">
+                <a class="btn" th:href="@{/recurring}">Cancel</a>
+                <button class="btn primary" type="submit">Save</button>
+            </div>
+        </form>
+        <div>
+            <form class="card" th:unless="${form.new}" th:action="@{/recurring/{id}/delete(id=${form.id})}" method="post" data-confirm="Delete this recurring item? Past transactions stay.">
+                <div class="card-body">
+                    <h3>Delete</h3>
+                    <p class="muted">Stops future reminders. Transactions already recorded are kept.</p>
+                    <button class="btn danger" type="submit">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

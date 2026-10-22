@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>My account</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Account</span>
+            <h1>My <b>account</b></h1>
+            <p th:text="|Signed in as ${currentUser.username} · last sign-in ${@fmt.dateTime(currentUser.lastLoginAt)}|">Signed in</p>
+        </div>
+    </div>
+    <div class="grid grid-2">
+        <form class="card" th:action="@{/account/profile}" th:object="${profileForm}" method="post">
+            <div class="card-head"><h2>Profile &amp; <b>preferences</b></h2></div>
+            <div class="card-body form-grid">
+                <div class="field full"><label for="fullName">Name</label><input type="text" th:field="*{fullName}"><div class="err" th:errors="*{fullName}"></div></div>
+                <div class="field full"><label for="email">Email</label><input type="email" th:field="*{email}"><div class="err" th:errors="*{email}"></div></div>
+                <div class="field"><label for="currencySymbol">Currency symbol</label><input type="text" th:field="*{currencySymbol}" maxlength="5">
+                    <div class="hint">₹ uses Indian grouping (1,25,000).</div><div class="err" th:errors="*{currencySymbol}"></div></div>
+                <div class="field"><label for="savingsTargetPercent">Savings target</label>
+                    <div class="money-input"><input type="number" min="0" max="90" th:field="*{savingsTargetPercent}" style="padding-left:16px"></div>
+                    <div class="hint">% of income to keep each month. Used for safe-to-spend and the health score.</div>
+                    <div class="err" th:errors="*{savingsTargetPercent}"></div></div>
+            </div>
+            <div class="card-body form-actions form-foot"><button class="btn primary" type="submit">Save profile</button></div>
+        </form>
+        <form class="card" th:action="@{/account/password}" th:object="${passwordForm}" method="post">
+            <div class="card-head"><h2>Change <b>password</b></h2></div>
+            <div class="card-body">
+                <div class="field">
+                    <label for="currentPassword">Current password</label>
+                    <input type="password" th:field="*{currentPassword}" autocomplete="current-password">
+                    <div class="err" th:errors="*{currentPassword}"></div>
+                </div>
+                <div class="field mt">
+                    <label for="newPassword">New password</label>
+                    <input type="password" th:field="*{newPassword}" autocomplete="new-password">
+                    <div class="err" th:errors="*{newPassword}"></div>
+                </div>
+                <div class="field mt">
+                    <label for="confirmPassword">Confirm new password</label>
+                    <input type="password" th:field="*{confirmPassword}" autocomplete="new-password">
+                    <div class="err" th:errors="*{confirmPassword}"></div>
+                    <div class="err" th:if="${#fields.hasErrors('passwordsMatch')}" th:errors="*{passwordsMatch}"></div>
+                </div>
+            </div>
+            <div class="card-body form-actions form-foot"><button class="btn primary" type="submit">Update password</button></div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

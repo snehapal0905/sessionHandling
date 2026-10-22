@@ -1,0 +1,1566 @@
+<!doctype html>
+<!--
+  Free website template by 8B: https://8b.com/templates/softlife/
+  Source: https://github.com/8bsite/community-website-template
+  MIT License (code) https://8b.com/ · Photos: Unsplash License, see CREDITS.md · Fonts: Google Fonts (OFL)
+  One HTML file, no build step. Notes for people and AI agents: README.md and AGENTS.md.
+  Adapted for Spendly: palette moved from pinks to washed, muted oranges; copy rewritten; sign-in wired to Spring Security.
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="_csrf" th:content="${_csrf.token}">
+<title>Spendly — money, planned beautifully</title>
+<meta name="description" content="Spendly is a personal budget planner: plan monthly budgets, compare income with expenses, track bills and savings goals, and see how the month will end before it does.">
+<meta name="generator" content="8B Templates">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Spendly — money, planned beautifully">
+<meta property="og:description" content="Spendly is a personal budget planner: plan monthly budgets, compare income with expenses, track bills and savings goals, and see how the month will end before it does.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2064%2064'%3E%3Crect%20width%3D'64'%20height%3D'64'%20rx%3D'14'%20fill%3D'%23b5562a'%2F%3E%3Ctext%20x%3D'32'%20y%3D'45'%20font-family%3D'Arial%2CHelvetica%2Csans-serif'%20font-size%3D'38'%20font-weight%3D'700'%20text-anchor%3D'middle'%20fill%3D'%23fcf8f3'%3Es%3C%2Ftext%3E%3C%2Fsvg%3E">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.gstatic.com/s/kalnia/v6/11hdGpPCwUbbYwZZP0RBuDY62BQZhjvO4N8XQQ.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmf-HY.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* math */
+@font-face {
+  font-family: 'Kalnia';
+  font-style: normal;
+  font-weight: 200 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/kalnia/v6/11hdGpPCwUbbYwZZP0RBuDY62BQZhjvO4KMXQVR-.woff2) format('woff2');
+  unicode-range: U+0302-0303, U+0305, U+0307-0308, U+0310, U+0312, U+0315, U+031A, U+0326-0327, U+032C, U+032F-0330, U+0332-0333, U+0338, U+033A, U+0346, U+034D, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+03D1, U+03D5-03D6, U+03F0-03F1, U+03F4-03F5, U+2016-2017, U+2034-2038, U+203C, U+2040, U+2043, U+2047, U+2050, U+2057, U+205F, U+2070-2071, U+2074-208E, U+2090-209C, U+20D0-20DC, U+20E1, U+20E5-20EF, U+2100-2112, U+2114-2115, U+2117-2121, U+2123-214F, U+2190, U+2192, U+2194-21AE, U+21B0-21E5, U+21F1-21F2, U+21F4-2211, U+2213-2214, U+2216-22FF, U+2308-230B, U+2310, U+2319, U+231C-2321, U+2336-237A, U+237C, U+2395, U+239B-23B7, U+23D0, U+23DC-23E1, U+2474-2475, U+25AF, U+25B3, U+25B7, U+25BD, U+25C1, U+25CA, U+25CC, U+25FB, U+266D-266F, U+27C0-27FF, U+2900-2AFF, U+2B0E-2B11, U+2B30-2B4C, U+2BFE, U+3030, U+FF5B, U+FF5D, U+1D400-1D7FF, U+1EE00-1EEFF;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Kalnia';
+  font-style: normal;
+  font-weight: 200 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/kalnia/v6/11hdGpPCwUbbYwZZP0RBuDY62BQZhjvO4NEXQVR-.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Kalnia';
+  font-style: normal;
+  font-weight: 200 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/kalnia/v6/11hdGpPCwUbbYwZZP0RBuDY62BQZhjvO4N8XQQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmS-HY6EQ.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmb-HY6EQ.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* math */
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xnj-HY6EQ.woff2) format('woff2');
+  unicode-range: U+0302-0303, U+0305, U+0307-0308, U+0310, U+0312, U+0315, U+031A, U+0326-0327, U+032C, U+032F-0330, U+0332-0333, U+0338, U+033A, U+0346, U+034D, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+03D1, U+03D5-03D6, U+03F0-03F1, U+03F4-03F5, U+2016-2017, U+2034-2038, U+203C, U+2040, U+2043, U+2047, U+2050, U+2057, U+205F, U+2070-2071, U+2074-208E, U+2090-209C, U+20D0-20DC, U+20E1, U+20E5-20EF, U+2100-2112, U+2114-2115, U+2117-2121, U+2123-214F, U+2190, U+2192, U+2194-21AE, U+21B0-21E5, U+21F1-21F2, U+21F4-2211, U+2213-2214, U+2216-22FF, U+2308-230B, U+2310, U+2319, U+231C-2321, U+2336-237A, U+237C, U+2395, U+239B-23B7, U+23D0, U+23DC-23E1, U+2474-2475, U+25AF, U+25B3, U+25B7, U+25BD, U+25C1, U+25CA, U+25CC, U+25FB, U+266D-266F, U+27C0-27FF, U+2900-2AFF, U+2B0E-2B11, U+2B30-2B4C, U+2BFE, U+3030, U+FF5B, U+FF5D, U+1D400-1D7FF, U+1EE00-1EEFF;
+}
+/* symbols */
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xnx-HY6EQ.woff2) format('woff2');
+  unicode-range: U+0001-000C, U+000E-001F, U+007F-009F, U+20DD-20E0, U+20E2-20E4, U+2150-218F, U+2190, U+2192, U+2194-2199, U+21AF, U+21E6-21F0, U+21F3, U+2218-2219, U+2299, U+22C4-22C6, U+2300-243F, U+2440-244A, U+2460-24FF, U+25A0-27BF, U+2800-28FF, U+2921-2922, U+2981, U+29BF, U+29EB, U+2B00-2BFF, U+4DC0-4DFF, U+FFF9-FFFB, U+10140-1018E, U+10190-1019C, U+101A0, U+101D0-101FD, U+102E0-102FB, U+10E60-10E7E, U+1D2C0-1D2D3, U+1D2E0-1D37F, U+1F000-1F0FF, U+1F100-1F1AD, U+1F1E6-1F1FF, U+1F30D-1F30F, U+1F315, U+1F31C, U+1F31E, U+1F320-1F32C, U+1F336, U+1F378, U+1F37D, U+1F382, U+1F393-1F39F, U+1F3A7-1F3A8, U+1F3AC-1F3AF, U+1F3C2, U+1F3C4-1F3C6, U+1F3CA-1F3CE, U+1F3D4-1F3E0, U+1F3ED, U+1F3F1-1F3F3, U+1F3F5-1F3F7, U+1F408, U+1F415, U+1F41F, U+1F426, U+1F43F, U+1F441-1F442, U+1F444, U+1F446-1F449, U+1F44C-1F44E, U+1F453, U+1F46A, U+1F47D, U+1F4A3, U+1F4B0, U+1F4B3, U+1F4B9, U+1F4BB, U+1F4BF, U+1F4C8-1F4CB, U+1F4D6, U+1F4DA, U+1F4DF, U+1F4E3-1F4E6, U+1F4EA-1F4ED, U+1F4F7, U+1F4F9-1F4FB, U+1F4FD-1F4FE, U+1F503, U+1F507-1F50B, U+1F50D, U+1F512-1F513, U+1F53E-1F54A, U+1F54F-1F5FA, U+1F610, U+1F650-1F67F, U+1F687, U+1F68D, U+1F691, U+1F694, U+1F698, U+1F6AD, U+1F6B2, U+1F6B9-1F6BA, U+1F6BC, U+1F6C6-1F6CF, U+1F6D3-1F6D7, U+1F6E0-1F6EA, U+1F6F0-1F6F3, U+1F6F7-1F6FC, U+1F700-1F7FF, U+1F800-1F80B, U+1F810-1F847, U+1F850-1F859, U+1F860-1F887, U+1F890-1F8AD, U+1F8B0-1F8BB, U+1F8C0-1F8C1, U+1F900-1F90B, U+1F93B, U+1F946, U+1F984, U+1F996, U+1F9E9, U+1FA00-1FA6F, U+1FA70-1FA7C, U+1FA80-1FA89, U+1FA8F-1FAC6, U+1FACE-1FADC, U+1FADF-1FAE9, U+1FAF0-1FAF8, U+1FB00-1FBFF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmQ-HY6EQ.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmR-HY6EQ.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmf-HY.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* fallback */
+@font-face {
+  font-family: 'Playwrite US Trad';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playwriteustrad/v11/fdNX9tyHsnVPjW9trmV7wQ0stdwRBYclCsCdzOb1-cd1Tctgig.woff2) format('woff2');
+}
+</style>
+<style data-8b-part="layers">@layer tokens, base, atoms, layout, sections, scenes;</style>
+<style data-8b-part="tokens">
+@layer tokens {
+:root {
+  --color-1: #fcf8f3;
+  --color-2: #5a2810;
+  --color-3: #b5562a;
+  --color-4: #f5c8a3;
+  --color-5: #f9e7d8;
+  --color-6: #bad4ed;
+  --color-7: #dae9f7;
+  --color-8: #efe4d8;
+  --font-1: "Kalnia", "Kalnia Fallback", Georgia, serif;
+  --font-2: "Onest", "Onest Fallback", Arial, sans-serif;
+  --font-3: "Playwrite US Trad", "Playwrite US Trad Fallback", "Segoe Script", Arial, cursive;
+  --radius-1: clamp(26px, 4.6vw, 64px);
+  --radius-2: 999px 999px 0 0;
+  --radius-3: 999px;
+  --radius-4: clamp(14px, 1.8vw, 26px);
+  --space-1: clamp(16px, 4.2vw, 56px);
+  --space-2: clamp(96px, 12vw, 176px);
+}
+}
+</style>
+<style data-8b-part="base">
+@layer base {
+  @font-face { font-family: "Kalnia Fallback"; src: local("Georgia"); font-weight: 100 549; size-adjust: 108.6%; ascent-override: 96.6%; descent-override: 27.6%; line-gap-override: 0%; }
+  @font-face { font-family: "Kalnia Fallback"; src: local("Georgia Bold"), local("Georgia-Bold"); font-weight: 550 1000; size-adjust: 111.2%; ascent-override: 94.4%; descent-override: 27%; line-gap-override: 0%; }
+  @font-face { font-family: "Onest Fallback"; src: local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Bold"); font-weight: 550 799; size-adjust: 99%; ascent-override: 97.9%; descent-override: 31.3%; line-gap-override: 0%; }
+  @font-face { font-family: "Onest Fallback"; src: local("Arial"), local("ArialMT"), local("Helvetica"); font-weight: 100 549; size-adjust: 105.1%; ascent-override: 92.3%; descent-override: 29.5%; line-gap-override: 0%; }
+  @font-face { font-family: "Playwrite US Trad Fallback"; src: local("Arial"), local("ArialMT"), local("Helvetica"); font-weight: 100 549; size-adjust: 129.7%; ascent-override: 110.2%; descent-override: 38.5%; line-gap-override: 0%; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+  .lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+  .lenis.lenis-smooth iframe { pointer-events: none; }
+  body { margin: 0; background: var(--color-1); color: var(--color-2); overflow-x: clip; }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+  h1, h2, h3, p, figure, ul, ol, dl, dd { margin: 0; }
+  ul, ol { padding: 0; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+  ::selection { background: var(--color-4); color: var(--color-2); }
+}
+</style>
+<style data-8b-part="system">
+@layer atoms {
+.m-text { font-family: var(--font-2); font-size: clamp(1rem, .96rem + .2vw, 1.0625rem); font-weight: 300; line-height: 1.65; letter-spacing: 0; text-transform: none; font-style: normal; }
+
+.m-text-2 { font-family: var(--font-1); font-size: clamp(2.6rem, 1.4rem + 4.6vw, 5.6rem); font-weight: 300; line-height: .98; letter-spacing: -.02em; text-transform: none; font-style: normal; text-wrap: balance; }
+.m-text-2 b { font-weight: 700; }
+
+.m-text-3 { font-family: var(--font-2); font-size: .75rem; font-weight: 600; line-height: 1.4; letter-spacing: .2em; text-transform: uppercase; font-style: normal; }
+
+.m-text-4 { font-family: var(--font-1); font-size: clamp(1.375rem, 1.1rem + .9vw, 1.875rem); font-weight: 400; line-height: 1.06; letter-spacing: -.01em; text-transform: none; font-style: normal; }
+.m-text-4 b { font-weight: 700; }
+
+.m-text-5 { font-family: var(--font-3); font-size: clamp(2rem, 1.5rem + 1.8vw, 3.25rem); font-weight: 300; line-height: 1.5; letter-spacing: 0; text-transform: none; font-style: normal; }
+
+.m-text-6 { font-family: var(--font-2); font-size: clamp(1.0625rem, .98rem + .45vw, 1.3125rem); font-weight: 300; line-height: 1.5; letter-spacing: 0; text-transform: none; font-style: normal; }
+
+.m-rule { display: flex; align-items: center; gap: clamp(14px, 2vw, 28px); font-family: var(--font-2); font-size: .75rem; font-weight: 600; line-height: 1.4; letter-spacing: .24em; text-transform: uppercase; font-style: normal; }
+.m-rule__line { flex: 1 1 0; height: 1px; background: currentColor; opacity: .45; }
+.m-rule__line:first-child { transform-origin: 100% 50%; }
+.m-rule__line:last-child { transform-origin: 0 50%; }
+.m-rule__label { flex: none; }
+
+.m-btn { position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: .95em 1.9em; border: 0; border-radius: var(--radius-3); background: var(--color-3); color: var(--color-1); font-family: var(--font-2); font-size: .8125rem; font-weight: 600; line-height: 1.2; letter-spacing: .16em; text-transform: uppercase; text-decoration: none; overflow: hidden; cursor: pointer; }
+.m-btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--color-2); clip-path: inset(100% 30% 0 30% round 999px 999px 0 0); transition: clip-path .55s cubic-bezier(.2,.7,.1,1); }
+.m-btn:focus-visible { outline-color: var(--color-3); }
+@media (hover: hover) { .m-btn:hover::before { clip-path: inset(0 0 0 0 round 999px 999px 0 0); } }
+
+.m-btn-2 { position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: .95em 1.9em; border: 0; border-radius: var(--radius-3); background: var(--color-1); color: var(--color-2); font-family: var(--font-2); font-size: .8125rem; font-weight: 600; line-height: 1.2; letter-spacing: .16em; text-transform: uppercase; text-decoration: none; overflow: hidden; cursor: pointer; }
+.m-btn-2::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--color-4); clip-path: inset(100% 30% 0 30% round 999px 999px 0 0); transition: clip-path .55s cubic-bezier(.2,.7,.1,1); }
+.m-btn-2:focus-visible { outline-color: var(--color-1); }
+@media (hover: hover) { .m-btn-2:hover::before { clip-path: inset(0 0 0 0 round 999px 999px 0 0); } }
+
+.m-link { position: relative; display: inline-block; padding-bottom: .15em; font-weight: 500; text-decoration: none; background: linear-gradient(currentColor, currentColor) 50% 100% / 100% 1px no-repeat; }
+.m-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: currentColor; transform: scaleX(0); transition: transform .45s cubic-bezier(.2,.7,.1,1); }
+@media (hover: hover) { .m-link:hover::after { transform: scaleX(1); } }
+
+.m-link-2 { position: relative; display: inline-block; padding: .35em 0; font-family: var(--font-2); font-size: .75rem; font-weight: 600; line-height: 1.2; letter-spacing: .16em; text-transform: uppercase; font-style: normal; text-decoration: none; }
+.m-link-2::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform: scaleX(0); transition: transform .45s cubic-bezier(.2,.7,.1,1); }
+@media (hover: hover) { .m-link-2:hover::after { transform: scaleX(1); } }
+
+.m-icon-btn { position: relative; isolation: isolate; display: inline-grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 1px solid currentColor; border-radius: 30%; background: transparent; cursor: pointer; overflow: hidden; }
+.m-icon-btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--color-4); border-radius: 50%; transform: scale(0); transition: transform .45s cubic-bezier(.2,.7,.1,1); }
+.m-icon-btn__glyph { display: block; width: 18px; height: 8px; border-block: 1.5px solid currentColor; }
+@media (hover: hover) { .m-icon-btn:hover::before { transform: scale(1.5); } }
+
+.m-surface { background: var(--color-4); color: var(--color-2); border-radius: var(--radius-1); }
+
+.m-surface-2 { background: var(--color-2); color: var(--color-1); border-radius: var(--radius-1); }
+
+.m-surface-3 { background: var(--color-6); color: var(--color-2); border-radius: var(--radius-1); }
+
+.m-surface-4 { background: var(--color-5); color: var(--color-2); border-radius: var(--radius-1); }
+
+.m-arch { position: relative; overflow: hidden; border-radius: var(--radius-2); background: var(--color-8); }
+.m-arch > img { width: 100%; height: 100%; object-fit: cover; }
+
+.m-badge { display: inline-flex; align-items: center; padding: .45em 1em; border: 1px solid currentColor; border-radius: var(--radius-3); font-family: var(--font-2); font-size: .6875rem; font-weight: 600; line-height: 1.2; letter-spacing: .14em; text-transform: uppercase; font-style: normal; }
+
+.m-field { display: grid; gap: 6px; }
+.m-field__label { font-family: var(--font-2); font-size: .6875rem; font-weight: 600; line-height: 1.4; letter-spacing: .2em; text-transform: uppercase; }
+.m-field input, .m-field select, .m-field textarea { width: 100%; min-height: 48px; padding: 10px 2px; border: 0; border-bottom: 1px solid currentColor; border-radius: 0; background: transparent; font-family: var(--font-2); font-size: 1rem; font-weight: 300; }
+.m-field textarea { min-height: 96px; resize: vertical; }
+.m-field input:focus-visible, .m-field select:focus-visible, .m-field textarea:focus-visible { outline: 2px solid var(--color-3); outline-offset: 2px; }
+}
+</style>
+<style data-8b-part="layout">
+@layer layout {
+  .u-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .u-skip { position: fixed; top: 8px; left: 8px; z-index: 100; padding: 12px 18px; background: var(--color-2); color: var(--color-1); transform: translateY(-160%); }
+  .u-skip:focus-visible { transform: none; outline-color: var(--color-3); }
+}
+</style>
+<style data-8b-part="section:nav">
+@layer sections {
+  #nav .nav__bar { position: fixed; inset: 0 0 auto 0; z-index: 50; display: flex; align-items: center; gap: clamp(16px, 2.4vw, 32px); padding: 12px var(--space-1); background: var(--color-1); color: var(--color-2); border-bottom: 1px solid color-mix(in srgb, var(--color-3) 16%, transparent); transition: transform .55s cubic-bezier(.2,.7,.1,1); }
+  #nav .nav__bar[data-hidden] { transform: translateY(-102%); }
+  #nav .nav__logo { font-family: var(--font-1); font-size: 1.75rem; font-weight: 200; line-height: 1; letter-spacing: -.02em; color: var(--color-3); text-decoration: none; }
+  #nav .nav__logo b { font-weight: 700; }
+  #nav .nav__bar > nav { margin-left: auto; }
+  #nav .nav__links { display: flex; gap: clamp(14px, 2vw, 30px); list-style: none; }
+  #nav .nav__cta { min-height: 44px; padding: .8em 1.6em; margin-left: clamp(8px, 1.6vw, 24px); }
+  #nav .nav__toggle { display: none; }
+  #nav .menu { position: fixed; inset: 0; z-index: 70; display: flex; flex-direction: column; gap: 32px; padding: 16px var(--space-1) 40px; background: var(--color-2); color: var(--color-1); overflow-y: auto; }
+  #nav .menu[hidden] { display: none; }
+  #nav .menu__top { display: flex; align-items: center; justify-content: space-between; }
+  #nav .menu__links { display: grid; gap: 4px; list-style: none; }
+  #nav .menu__links a { font-family: var(--font-1); font-size: clamp(2.4rem, 9vw, 3.4rem); font-weight: 300; line-height: 1.15; text-decoration: none; }
+  #nav .menu .m-icon-btn::before { background: var(--color-3); }
+  #nav .menu__close .m-icon-btn__glyph { height: 1.5px; border: 0; background: currentColor; transform: rotate(45deg); box-shadow: none; }
+  #nav .menu__close .m-icon-btn__glyph::after { content: ""; display: block; height: 1.5px; background: currentColor; transform: rotate(-90deg); }
+  @media (max-width: 1023px) {
+    #nav .nav__links { display: none; }
+    #nav .nav__cta { margin-left: auto; }
+    #nav .nav__toggle { display: inline-grid; }
+  }
+  @media (max-width: 400px) { #nav .nav__cta { padding: .8em 1.2em; } }
+}
+</style>
+<style data-8b-part="section:hero">
+@layer sections {
+  #hero { position: relative; isolation: isolate; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-rows: 1fr auto; column-gap: clamp(20px, 3vw, 48px); padding: clamp(84px, 12vh, 124px) var(--space-1) 0; overflow: clip; overflow-anchor: none; }
+  #hero .hero__dome-wrap { position: absolute; inset: auto 0 0 0; height: 58svh; z-index: -1; pointer-events: none; }
+  #hero .hero__dome { position: absolute; inset: 0; background: var(--color-2); clip-path: inset(calc(100% - 100px) calc(50% - 32px) 0px calc(50% - 32px) round 32px 32px 0px 0px / 32px 32px 0px 0px); }
+  #hero .hero__head { grid-column: 1 / -1; align-self: center; text-align: center; padding-bottom: clamp(16px, 4vh, 48px); }
+  #hero .hero__mark { font-weight: 400; line-height: 1; }
+  #hero .hero__visual { display: inline-grid; grid-template-columns: 1fr 1fr; align-items: baseline; font-family: var(--font-1); color: var(--color-3); line-height: .8; letter-spacing: -.035em; white-space: nowrap; font-size: min(24vw, calc((100vw - 2 * var(--space-1)) / (var(--len) * .42))); }
+  #hero .hero__half, #hero .hero__word, #hero .hero__i { display: inline-block; }
+  #hero .hero__half--l { justify-self: end; }
+  #hero .hero__half--r { justify-self: start; }
+  #hero .hero__word--soft { font-weight: 200; transform-origin: 100% 85%; }
+  #hero .hero__word--life { font-weight: 700; transform-origin: 0 85%; }
+  #hero .hero__i { position: relative; }
+  #hero .hero__star { position: absolute; left: 50%; top: -.02em; width: .13em; height: .13em; margin-left: -.065em; background: currentColor; clip-path: polygon(50% 0, 57% 43%, 100% 50%, 57% 57%, 50% 100%, 43% 57%, 0 50%, 43% 43%); }
+  #hero .hero__tag { display: flex; align-items: center; justify-content: center; gap: clamp(10px, 1.6vw, 22px); max-width: 54rem; margin: clamp(14px, 2.6vh, 28px) auto 0; color: var(--color-2); }
+  #hero .hero__tag-line { flex: 1 1 0; min-width: 16px; height: 1px; background: currentColor; opacity: .45; }
+  #hero .hero__tag-text { flex: none; }
+  #hero .hero__lede { grid-column: 1; grid-row: 2; align-self: end; max-width: 25rem; padding-bottom: clamp(32px, 6vh, 56px); }
+  #hero .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 22px; }
+  #hero .hero__photo { grid-column: 3; grid-row: 2; justify-self: end; align-self: end; width: clamp(200px, 21vw, 300px); margin-bottom: clamp(28px, 5vh, 52px); }
+  #hero .hero__photo-frame { aspect-ratio: 5 / 6; overflow: hidden; border-radius: var(--radius-1); background: var(--color-6); }
+  #hero .hero__photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; transform: scale(1.18); }
+  #hero .hero__swatches { grid-column: 2; grid-row: 2; align-self: end; display: flex; align-items: flex-end; gap: 12px; }
+  #hero .hero__group { display: flex; align-items: flex-end; gap: 12px; list-style: none; }
+  #hero .hero__swatch { display: block; }
+  #hero .hero__chip, #hero .hero__slot { display: block; width: 64px; height: 100px; border-radius: var(--radius-2); }
+  #hero .hero__group--l .hero__swatch:nth-child(1) .hero__chip { background: var(--color-8); }
+  #hero .hero__group--l .hero__swatch:nth-child(2) .hero__chip { background: var(--color-7); }
+  #hero .hero__group--l .hero__swatch:nth-child(3) .hero__chip { background: var(--color-6); }
+  #hero .hero__group--r .hero__swatch:nth-child(1) .hero__chip { background: var(--color-3); }
+  #hero .hero__group--r .hero__swatch:nth-child(2) .hero__chip { background: var(--color-4); }
+  #hero .hero__group--r .hero__swatch:nth-child(3) .hero__chip { background: var(--color-5); }
+  #hero[data-paused] .hero__chip, #hero[data-paused] .hero__photo img, #hero[data-paused] .hero__star { animation-play-state: paused; }
+  @media (max-width: 719px) {
+    #hero { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto auto; row-gap: 18px; padding-top: 84px; }
+    #hero .hero__dome-wrap { height: 44svh; }
+    #hero .hero__dome { clip-path: inset(calc(100% - 52px) calc(50% - 17px) 0px calc(50% - 17px) round 17px 17px 0px 0px / 17px 17px 0px 0px); }
+    #hero .hero__head { align-self: start; padding-bottom: 0; }
+    #hero .hero__tag { gap: 10px; }
+    #hero .hero__tag-text { flex: 0 1 auto; max-width: 15rem; }
+    #hero .hero__photo { grid-column: 1; grid-row: 3; justify-self: center; width: min(54vw, 230px); margin: 0; }
+    #hero .hero__lede { grid-column: 1; grid-row: 2; justify-self: center; text-align: center; padding-bottom: 0; }
+    #hero .hero__actions { justify-content: center; margin-top: 16px; }
+    #hero .hero__swatches, #hero .hero__group { gap: 8px; }
+    #hero .hero__swatches { grid-column: 1; grid-row: 4; justify-self: center; }
+    #hero .hero__chip, #hero .hero__slot { width: 34px; height: 52px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes hero-in-l { from { transform: translateX(-7vw); } }
+    @keyframes hero-in-r { from { transform: translateX(7vw); } }
+    @keyframes hero-star { from { transform: scale(0) rotate(-120deg); } }
+    @keyframes hero-rise { from { transform: translateY(110%); } }
+    @keyframes hero-dome { from { transform: translateY(110px); } }
+    @keyframes hero-line { from { transform: scaleX(0); } }
+    @keyframes hero-open { from { transform: translateY(48px) scale(.92); } }
+    @keyframes hero-lift { from { transform: translateY(28px); } }
+    @keyframes hero-pan { from { transform: translateY(-30px) scale(1.18); } to { transform: translateY(30px) scale(1.18); } }
+    @keyframes hero-bob { to { transform: translateY(-16px); } }
+    @keyframes hero-twinkle { 50% { transform: scale(1.35) rotate(45deg); } }
+    #hero .hero__half--l { animation: hero-in-l 1.1s cubic-bezier(.2,.7,.1,1) backwards; }
+    #hero .hero__half--r { animation: hero-in-r 1.1s cubic-bezier(.2,.7,.1,1) backwards; }
+    #hero .hero__star { animation: hero-star .7s .45s cubic-bezier(.3,1.4,.4,1) backwards, hero-twinkle 3.2s 1.2s ease-in-out infinite; }
+    #hero .hero__tag-line { animation: hero-line 1s .2s cubic-bezier(.2,.7,.1,1) backwards; }
+    #hero .hero__tag-line:first-of-type { transform-origin: 100% 50%; }
+    #hero .hero__tag-line:last-of-type { transform-origin: 0 50%; }
+    #hero .hero__swatch { animation: hero-rise .8s cubic-bezier(.2,.7,.1,1) backwards; }
+    #hero .hero__group--l .hero__swatch:nth-child(1), #hero .hero__group--r .hero__swatch:nth-child(3) { animation-delay: .38s; }
+    #hero .hero__group--l .hero__swatch:nth-child(2), #hero .hero__group--r .hero__swatch:nth-child(2) { animation-delay: .28s; }
+    #hero .hero__group--l .hero__swatch:nth-child(3), #hero .hero__group--r .hero__swatch:nth-child(1) { animation-delay: .18s; }
+    #hero .hero__dome-wrap { animation: hero-dome .8s .08s cubic-bezier(.2,.7,.1,1) backwards; }
+    #hero .hero__chip { animation: hero-bob 2.6s 1.2s ease-in-out infinite alternate; }
+    #hero .hero__group--l .hero__swatch:nth-child(2) .hero__chip, #hero .hero__group--r .hero__swatch:nth-child(2) .hero__chip { animation-delay: 1.6s; }
+    #hero .hero__group--l .hero__swatch:nth-child(1) .hero__chip, #hero .hero__group--r .hero__swatch:nth-child(3) .hero__chip { animation-delay: 2s; }
+    #hero .hero__photo { animation: hero-open 1.1s .1s cubic-bezier(.2,.7,.1,1) backwards; }
+    #hero .hero__photo img { animation: hero-pan 5s ease-in-out infinite alternate; }
+    #hero .hero__lede { animation: hero-lift .9s .2s cubic-bezier(.2,.7,.1,1) backwards; }
+  }
+}
+</style>
+<style data-8b-part="section:manifesto">
+@layer sections {
+  #manifesto { position: relative; isolation: isolate; color: var(--color-1); padding: clamp(150px, 26vh, 260px) var(--space-1) var(--space-2); }
+  #manifesto .manifesto__ground { position: absolute; inset: 0; z-index: -1; background: var(--color-2); clip-path: inset(0px calc(0% - 0px) 0px calc(0% - 0px)); }
+  #manifesto .manifesto__inner { max-width: 70rem; margin: 0 auto; }
+  #manifesto .m-rule { color: var(--color-4); }
+  #manifesto .manifesto__text { margin-top: clamp(28px, 4vw, 56px); font-size: clamp(1.85rem, .9rem + 3.6vw, 4.25rem); line-height: 1.1; text-wrap: pretty; }
+  #manifesto .manifesto__text b { color: var(--color-4); }
+  #manifesto .manifesto__foot { background: var(--color-2); display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 16px 40px; margin-top: clamp(40px, 6vw, 80px); padding-top: 20px; border-top: 1px solid color-mix(in srgb, var(--color-4) 40%, transparent); }
+  #manifesto .manifesto__note { max-width: 32rem; color: var(--color-5); }
+}
+</style>
+<style data-8b-part="section:week">
+@layer sections {
+  #week { padding: clamp(96px, 13vh, 132px) var(--space-1) clamp(56px, 8vh, 96px); }
+  #week .week__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); align-items: end; gap: 20px clamp(32px, 6vw, 96px); margin-bottom: clamp(32px, 5vh, 56px); }
+  #week .week__head .m-text-2 { color: var(--color-3); }
+  #week .week__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: clamp(10px, 1.3vw, 20px); list-style: none; }
+  #week .week__day { display: flex; flex-direction: column; gap: 8px; }
+  #week .week__clip { overflow: hidden; margin-bottom: 8px; }
+  #week .week__frame { aspect-ratio: 4 / 7; }
+  #week .week__swatch { position: absolute; inset: 0; transform: translateY(101%); }
+  #week .week__day:nth-child(1) .week__swatch { background: var(--color-2); }
+  #week .week__day:nth-child(2) .week__swatch { background: var(--color-3); }
+  #week .week__day:nth-child(3) .week__swatch { background: var(--color-4); }
+  #week .week__day:nth-child(4) .week__swatch { background: var(--color-5); }
+  #week .week__day:nth-child(5) .week__swatch { background: var(--color-6); }
+  #week .week__day:nth-child(6) .week__swatch { background: var(--color-7); }
+  #week .week__day:nth-child(7) .week__swatch { background: var(--color-8); }
+  #week .week__title { font-size: clamp(1.125rem, .8rem + .75vw, 1.5rem); color: var(--color-3); }
+  #week .week__meta { color: var(--color-2); }
+  #week .week__note { font-size: .875rem; line-height: 1.5; }
+  @media (max-width: 899px) {
+    #week { padding-top: var(--space-2); }
+    #week .week__head { grid-template-columns: minmax(0, 1fr); }
+    #week .week__days { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    #week .week__day { display: grid; grid-template-columns: 92px minmax(0, 1fr); grid-template-rows: auto auto 1fr; column-gap: 20px; row-gap: 6px; align-items: end; }
+    #week .week__clip { grid-row: 1 / span 3; margin: 0; }
+    #week .week__frame { aspect-ratio: 9 / 16; }
+    #week .week__title { align-self: end; font-size: 1.375rem; }
+    #week .week__note { align-self: start; }
+  }
+}
+</style>
+<style data-8b-part="section:clubs">
+@layer sections {
+  #clubs { padding: var(--space-2) var(--space-1); }
+  #clubs .clubs__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); align-items: end; gap: 20px clamp(32px, 6vw, 96px); margin-bottom: clamp(40px, 6vw, 80px); }
+  #clubs .clubs__head .m-text-2 { color: var(--color-3); }
+  #clubs .clubs__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: clamp(12px, 1.6vw, 24px); list-style: none; }
+  #clubs .clubs__tile { position: relative; display: flex; flex-direction: column; min-height: clamp(400px, 36vw, 500px); padding: clamp(22px, 2.2vw, 34px); }
+  #clubs .clubs__tile:nth-child(even) { margin-top: clamp(32px, 5vw, 72px); }
+  #clubs .clubs__mono { position: relative; margin-bottom: auto; font-family: var(--font-1); font-size: clamp(7.5rem, 12vw, 11rem); font-weight: 700; line-height: .78; letter-spacing: -.04em; color: var(--color-3); }
+  #clubs .clubs__seal { position: absolute; left: 52%; top: 46%; font-family: var(--font-2); font-size: .5625rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; }
+  #clubs .clubs__tile:nth-child(2) .clubs__mono { color: var(--color-4); }
+  #clubs .clubs__tile:nth-child(3) .clubs__mono { color: var(--color-2); }
+  #clubs .clubs__tile h3 { margin-top: 28px; }
+  #clubs .clubs__when { margin-top: 10px; }
+  #clubs .clubs__text { margin-top: 12px; font-size: .9375rem; line-height: 1.55; }
+  @media (max-width: 1023px) {
+    #clubs .clubs__head { grid-template-columns: minmax(0, 1fr); }
+    #clubs .clubs__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 599px) {
+    #clubs .clubs__grid { grid-template-columns: minmax(0, 1fr); }
+    #clubs .clubs__tile { min-height: 340px; }
+    #clubs .clubs__tile:nth-child(even) { margin-top: 0; }
+  }
+}
+</style>
+<style data-8b-part="section:board">
+@layer sections {
+  #board { padding: clamp(80px, 11vh, 112px) var(--space-1) clamp(28px, 5vh, 56px); }
+  #board .board__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 10px 48px; margin-bottom: clamp(18px, 3vh, 32px); }
+  #board .board__head .m-text-2 { color: var(--color-3); font-size: clamp(2.3rem, 1.2rem + 3.4vw, 4.6rem); }
+  #board .board__lede { max-width: 25rem; }
+  #board .board__grid { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(3, clamp(110px, calc((100svh - 300px) / 3), 230px)); grid-template-areas: "car car poster legs lockup drink" "lips gingham poster legs chair drink" "ooo ooo stripes gift chair roses"; gap: clamp(8px, 1vw, 14px); list-style: none; }
+  #board .board__tile { position: relative; overflow: hidden; border-radius: var(--radius-4); container-type: size; }
+  #board .board__tile:has(> img) { background: var(--color-8); }
+  #board .board__tile > img { width: 100%; height: 100%; object-fit: cover; }
+  #board .board__tile--car { grid-area: car; }
+  #board .board__tile--poster { grid-area: poster; }
+  #board .board__tile--legs { grid-area: legs; }
+  #board .board__tile--lockup { grid-area: lockup; }
+  #board .board__tile--drink { grid-area: drink; }
+  #board .board__tile--lips { grid-area: lips; }
+  #board .board__tile--gingham { grid-area: gingham; display: grid; place-items: center; background-color: var(--color-1); background-image: linear-gradient(90deg, color-mix(in srgb, var(--color-6) 62%, transparent) 50%, transparent 50%), linear-gradient(color-mix(in srgb, var(--color-6) 62%, transparent) 50%, transparent 50%); background-size: 26px 26px; }
+  #board .board__tile--gingham .m-badge { background: var(--color-1); color: var(--color-2); }
+  #board .board__tile--chair { grid-area: chair; }
+  #board .board__tile--ooo { grid-area: ooo; }
+  #board .board__tile--stripes { grid-area: stripes; background: repeating-linear-gradient(90deg, var(--color-7) 0 13%, var(--color-1) 13% 26%); }
+  #board .board__tile--gift { grid-area: gift; }
+  #board .board__tile--roses { grid-area: roses; }
+  #board .board__poster { position: absolute; inset: 5cqh 0; display: flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--font-1); font-size: min(46cqw, 25cqh); line-height: .86; letter-spacing: -.02em; text-transform: uppercase; color: var(--color-3); }
+  #board .board__poster span:first-child { font-weight: 200; }
+  #board .board__poster span:last-child { font-weight: 700; }
+  #board .board__lockup { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; font-family: var(--font-1); font-size: min(24cqh, 26cqw); font-weight: 400; line-height: .84; letter-spacing: .02em; text-transform: uppercase; color: var(--color-4); }
+  #board .board__script { position: relative; z-index: 1; margin: -.32em 0 -.42em; font-size: min(26cqh, 28cqw); line-height: 1.4; color: var(--color-1); transform: rotate(-8deg); }
+  #board .board__ooo { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 6cqh; padding: 8cqh 7cqw; }
+  #board .board__ooo-big { font-family: var(--font-1); font-size: min(30cqh, 12cqw); font-weight: 300; line-height: .9; letter-spacing: -.02em; color: var(--color-3); }
+  #board .board__ooo-big b { font-weight: 700; }
+  #board .board__quote { position: absolute; left: 8%; right: 8%; top: 50%; translate: 0 -50%; padding: 9cqh 6cqw; border-radius: var(--radius-3); background: var(--color-1); color: var(--color-3); font-family: var(--font-1); font-size: min(14cqh, 13cqw); font-weight: 300; line-height: 1; text-align: center; }
+  #board .board__quote b { font-weight: 700; }
+  @media (max-width: 767px) {
+    #board { padding-top: 76px; }
+    #board .board__head { margin-bottom: 14px; }
+    #board .board__head .m-text-2 { font-size: 2.3rem; }
+    #board .board__lede { font-size: .9375rem; line-height: 1.5; }
+    #board .board__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(6, clamp(64px, calc((100svh - 300px) / 6), 130px)); grid-template-areas: "car car poster" "lips gingham poster" "legs lockup drink" "legs chair drink" "stripes chair gift" "ooo ooo roses"; gap: 6px; }
+    #board .board__tile--gingham { background-size: 16px 16px; }
+    #board .board__tile--gingham .m-badge { font-size: .5625rem; padding: .4em .7em; }
+  }
+}
+</style>
+<style data-8b-part="section:edit">
+@layer sections {
+  #edit { padding: var(--space-2) var(--space-1); }
+  #edit .edit__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); align-items: end; gap: 20px clamp(32px, 6vw, 96px); margin-bottom: clamp(40px, 6vw, 80px); }
+  #edit .edit__head .m-text-2 { color: var(--color-3); }
+  #edit .edit__body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: clamp(32px, 6vw, 96px); }
+  #edit .edit__stage { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  #edit .edit__shot { position: relative; overflow: hidden; aspect-ratio: 4 / 5; border-radius: var(--radius-1); }
+  #edit .edit__slide, #edit .edit__hold { position: absolute; inset: 0; }
+  #edit .edit__slide { overflow: hidden; }
+  #edit .edit__shot:nth-child(1) .edit__slide { background: var(--color-6); }
+  #edit .edit__shot:nth-child(2) .edit__slide { background: var(--color-4); }
+  #edit .edit__shot:nth-child(3) .edit__slide { background: var(--color-7); }
+  #edit .edit__shot:nth-child(4) .edit__slide { background: var(--color-2); }
+  #edit .edit__arch { position: absolute; left: 17%; right: 17%; top: 11%; bottom: 0; }
+  #edit .edit__list { display: grid; gap: clamp(40px, 6vw, 72px); }
+  #edit .edit__item { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-top: 24px; border-top: 1px solid color-mix(in srgb, var(--color-2) 25%, transparent); }
+  #edit .edit__item h3 { color: var(--color-3); font-size: clamp(1.75rem, 1.2rem + 1.8vw, 2.75rem); }
+  #edit .edit__price { font-family: var(--font-1); font-size: 1.75rem; font-weight: 300; line-height: 1; }
+  #edit .edit__item p:not([class]) { max-width: 26rem; }
+  @media (max-width: 1023px) {
+    #edit .edit__head, #edit .edit__body { grid-template-columns: minmax(0, 1fr); }
+  }
+}
+</style>
+<style data-8b-part="scene-style:edit">
+@layer scenes {
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    #edit[data-staged] .edit__stage { position: sticky; top: 14vh; display: block; height: 72vh; }
+    #edit[data-staged] .edit__shot { position: absolute; inset: 0; aspect-ratio: auto; }
+    #edit[data-staged] .edit__arch { left: 22%; right: 22%; top: 12%; }
+    #edit[data-staged] .edit__item { min-height: 58vh; }
+  }
+}
+</style>
+<style data-8b-part="section:journal">
+@layer sections {
+  #journal { padding: var(--space-2) var(--space-1); }
+  #journal .journal__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: clamp(40px, 6vw, 80px); }
+  #journal .journal__head .m-text-2 { max-width: 14ch; color: var(--color-3); }
+  #journal .journal__layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; gap: clamp(32px, 5vw, 80px); }
+  #journal .journal__poster { position: sticky; top: 12vh; display: flex; align-items: center; justify-content: center; height: 76vh; overflow: hidden; }
+  #journal .journal__type { display: flex; flex-direction: column; align-items: center; gap: .06em; writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--font-1); font-size: min(16vh, 8.2vw); line-height: .86; letter-spacing: -.02em; text-transform: uppercase; color: var(--color-3); }
+  #journal .journal__word { display: block; }
+  #journal .journal__word:first-child { font-weight: 200; }
+  #journal .journal__word:last-child { font-weight: 700; }
+  #journal .journal__list { display: grid; list-style: none; }
+  #journal .journal__entry { display: grid; grid-template-columns: clamp(120px, 14vw, 200px) minmax(0, 1fr); align-items: start; gap: 20px clamp(20px, 3vw, 40px); padding: clamp(24px, 3vw, 40px) 0; border-top: 1px solid color-mix(in srgb, var(--color-2) 25%, transparent); }
+  #journal .journal__entry:last-child { border-bottom: 1px solid color-mix(in srgb, var(--color-2) 25%, transparent); }
+  #journal .journal__thumb { aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius-4); }
+  #journal .journal__thumb img { width: 100%; height: 100%; object-fit: cover; }
+  #journal .journal__text { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+  #journal .journal__text h3 { font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.375rem); color: var(--color-3); }
+  #journal .journal__text .m-badge { color: var(--color-3); }
+  @media (max-width: 899px) {
+    #journal .journal__layout { grid-template-columns: minmax(0, 1fr); }
+    #journal .journal__poster { position: relative; top: auto; height: 56vw; }
+    #journal .journal__type { flex-direction: column; align-items: center; writing-mode: horizontal-tb; transform: none; font-size: 15vw; }
+  }
+  @media (max-width: 559px) {
+    #journal .journal__entry { grid-template-columns: 96px minmax(0, 1fr); }
+  }
+}
+</style>
+<style data-8b-part="section:letter">
+@layer sections {
+  #letter { padding: var(--space-2) var(--space-1) clamp(28px, 4vw, 48px); overflow: clip; }
+  #letter .letter__layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: end; gap: clamp(28px, 5vw, 80px); }
+  #letter .letter__portrait { aspect-ratio: 3 / 4; }
+  #letter .letter__sheet { padding: clamp(28px, 4.4vw, 68px); }
+  #letter .letter__sheet .m-text-2 { color: var(--color-3); }
+  #letter .letter__body { display: grid; gap: 1em; max-width: 36rem; margin-top: 28px; }
+  #letter .letter__sign { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; margin-top: 24px; }
+  #letter .letter__signature { color: var(--color-3); }
+  #letter .letter__motto { margin-top: clamp(56px, 8vw, 112px); font-size: min(6.25rem, calc((100vw - 2 * var(--space-1) - 25vw) / (var(--len) * .52))); line-height: .9; white-space: nowrap; color: var(--color-3); }
+  @media (max-width: 899px) {
+    #letter .letter__layout { grid-template-columns: minmax(0, 1fr); }
+    #letter .letter__portrait { width: min(72%, 360px); }
+  }
+  @media (max-width: 599px) {
+    #letter .letter__motto { font-size: 2.6rem; white-space: normal; }
+  }
+}
+</style>
+<style data-8b-part="section:membership">
+@layer sections {
+  #membership { padding: clamp(20px, 3vw, 40px) var(--space-1) var(--space-2); overflow: clip; }
+  #membership .membership__head { display: flex; flex-direction: column; align-items: flex-end; gap: clamp(16px, 2vw, 28px); margin-bottom: clamp(40px, 6vw, 72px); text-align: right; }
+  #membership .membership__head .m-text-6 { max-width: 24rem; }
+  #membership .membership__title { font-size: min(6.25rem, calc((100vw - 2 * var(--space-1) - 25vw) / (var(--len) * .52))); white-space: nowrap; color: var(--color-3); }
+  #membership .membership__cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 24px); list-style: none; }
+  #membership .membership__card { perspective: 1600px; }
+  #membership .membership__flip { position: relative; height: 100%; transform-style: preserve-3d; }
+  #membership .membership__front, #membership .membership__back { backface-visibility: hidden; }
+  #membership .membership__front { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; height: 100%; min-height: clamp(420px, 36vw, 480px); padding: clamp(24px, 2.6vw, 40px); }
+  #membership .membership__back { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 18px; transform: rotateY(180deg); visibility: hidden; }
+  #membership .membership__mono { font-family: var(--font-1); font-size: clamp(8rem, 13vw, 12rem); font-weight: 200; line-height: .8; letter-spacing: -.05em; color: var(--color-4); }
+  #membership .membership__mono b { font-weight: 700; }
+  #membership .membership__card:nth-child(2) .membership__mono { color: var(--color-3); }
+  #membership .membership__price { display: flex; align-items: baseline; gap: 10px; font-family: var(--font-1); font-size: clamp(2.6rem, 2rem + 2vw, 3.75rem); font-weight: 300; line-height: 1; }
+  #membership .membership__perks { display: grid; gap: 8px; width: 100%; padding-top: 16px; border-top: 1px solid currentColor; list-style: none; }
+  #membership .membership__perks li::before { content: "✦ "; font-size: .75em; }
+  #membership .membership__front > a { margin-top: auto; }
+  @media (max-width: 599px) {
+    #membership .membership__title { font-size: 2.6rem; }
+  }
+  @media (max-width: 899px) {
+    #membership .membership__cards { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    #membership .membership__front { min-height: 420px; }
+  }
+}
+</style>
+<style data-8b-part="section:faq">
+@layer sections {
+  #faq { padding: var(--space-2) var(--space-1); }
+  #faq .faq__layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; gap: clamp(32px, 6vw, 96px); }
+  #faq .faq__intro { position: sticky; top: 14vh; display: grid; gap: 20px; justify-items: start; }
+  #faq .faq__intro .m-text-2 { color: var(--color-3); }
+  #faq .faq__list { border-top: 1px solid color-mix(in srgb, var(--color-2) 28%, transparent); }
+  #faq .faq__item { border-bottom: 1px solid color-mix(in srgb, var(--color-2) 28%, transparent); }
+  #faq .faq__q { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 0; list-style: none; cursor: pointer; }
+  #faq .faq__q::-webkit-details-marker { display: none; }
+  #faq .faq__q .m-text-4 { font-size: clamp(1.25rem, 1.05rem + .7vw, 1.625rem); }
+  #faq .faq__icon { position: relative; isolation: isolate; flex: none; width: 44px; height: 44px; border: 1px solid currentColor; border-radius: 30%; overflow: hidden; }
+  #faq .faq__icon::before, #faq .faq__icon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 1.5px; margin: -.75px 0 0 -7px; background: currentColor; transition: transform .4s cubic-bezier(.2,.7,.1,1); }
+  #faq .faq__icon::after { transform: rotate(90deg); }
+  #faq .faq__item[open] .faq__icon::after { transform: rotate(0deg); }
+  #faq .faq__fill { position: absolute; inset: 0; z-index: -1; border-radius: 50%; background: var(--color-4); transform: scale(0); transition: transform .45s cubic-bezier(.2,.7,.1,1); }
+  @media (hover: hover) { #faq .faq__q:hover .faq__fill { transform: scale(1.5); } }
+  #faq .faq__a { max-width: 38rem; padding: 0 64px 26px 0; }
+  @media (max-width: 899px) {
+    #faq .faq__layout { grid-template-columns: minmax(0, 1fr); }
+    #faq .faq__intro { position: static; }
+    #faq .faq__a { padding-right: 0; }
+  }
+}
+</style>
+<style data-8b-part="section:contact">
+@layer sections {
+  #contact { padding: var(--space-2) var(--space-1); }
+  #contact .contact__layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; gap: clamp(32px, 6vw, 96px); }
+  #contact .contact__door { aspect-ratio: 3 / 4.3; }
+  #contact .contact__leaf { position: absolute; top: 0; bottom: 0; width: 50.5%; background: var(--color-2); }
+  #contact .contact__leaf--l { left: 0; transform: translateX(-101%); }
+  #contact .contact__leaf--r { right: 0; transform: translateX(101%); }
+  #contact .contact__leaf::before { content: ""; position: absolute; inset: 16% 18% 9%; border: 1px solid color-mix(in srgb, var(--color-4) 55%, transparent); border-radius: var(--radius-2); }
+  #contact .contact__leaf::after { content: ""; position: absolute; top: 58%; width: 12px; height: 12px; border-radius: 50%; background: var(--color-4); }
+  #contact .contact__leaf--l::after { right: 7%; }
+  #contact .contact__leaf--r::after { left: 7%; }
+  #contact .contact__info .m-text-2 { color: var(--color-3); }
+  #contact .contact__details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 32px; margin: clamp(28px, 4vw, 48px) 0; }
+  #contact .contact__details h3 { margin-bottom: 8px; }
+  #contact address { font-style: normal; }
+  #contact .contact__form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 28px; padding: clamp(24px, 3vw, 44px); }
+  #contact .contact__wide { grid-column: 1 / -1; }
+  #contact .contact__form .m-btn { justify-self: start; }
+  #contact .contact__status { grid-column: 1 / -1; color: var(--color-3); }
+  @media (max-width: 899px) {
+    #contact .contact__layout { grid-template-columns: minmax(0, 1fr); }
+    #contact .contact__door { width: min(78%, 380px); }
+  }
+  @media (max-width: 559px) {
+    #contact .contact__details, #contact .contact__form { grid-template-columns: minmax(0, 1fr); }
+  }
+}
+</style>
+<style data-8b-part="section:footer">
+@layer sections {
+  #footer { padding: clamp(64px, 9vw, 120px) var(--space-1) 28px; background: var(--color-4); color: var(--color-2); overflow: clip; }
+  #footer .footer__mark { font-family: var(--font-1); font-weight: 200; color: var(--color-3); line-height: .8; letter-spacing: -.035em; text-align: center; white-space: nowrap; }
+  #footer .footer__mark span { display: inline-block; font-size: min(24vw, calc((100vw - 2 * var(--space-1)) / (var(--len) * .42))); }
+  #footer .footer__mark b { font-weight: 700; }
+  #footer .footer__cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin-top: clamp(48px, 7vw, 96px); padding-top: 28px; border-top: 1px solid color-mix(in srgb, var(--color-2) 30%, transparent); }
+  #footer .footer__cols ul { list-style: none; display: grid; gap: 6px; }
+  #footer .footer__cols h2 { margin-bottom: 12px; }
+  #footer .footer__base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; margin-top: 56px; font-size: .8125rem; }
+  #footer .footer__legal { display: flex; gap: 24px; }
+  @media (max-width: 899px) { #footer .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 479px) { #footer .footer__cols { grid-template-columns: minmax(0, 1fr); } }
+}
+</style>
+<style data-8b-part="spendly">
+@layer sections {
+  /* "spend" + "ly" are uneven halves, so size the columns to their content */
+  #hero .hero__visual { grid-template-columns: auto auto; padding-bottom: .2em; }  /* room for the descender of the y */
+  #edit .edit__stock { display: flex; align-items: baseline; gap: 10px; font-family: var(--font-1); font-size: 1.75rem; font-weight: 300; line-height: 1; }
+  #contact .contact__remember { display: flex; align-items: center; gap: 10px; font-size: .9375rem; cursor: pointer; }
+  #contact .contact__remember input { width: 18px; height: 18px; accent-color: var(--color-3); }
+  #contact .password-field { position: relative; display: block; }
+  #contact .password-field input { padding-right: 48px; }
+  #contact .password-toggle { position: absolute; top: 50%; right: 0; translate: 0 -50%; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: var(--radius-3); background: transparent; color: var(--color-3); cursor: pointer; }
+  #contact .password-toggle svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  #contact .password-toggle .eye-shut, #contact .password-toggle[aria-pressed="true"] .eye-open { display: none; }
+  #contact .password-toggle[aria-pressed="true"] .eye-shut { display: block; }
+  #contact .contact__error { grid-column: 1 / -1; color: var(--color-3); font-weight: 500; }
+  #footer .footer__credits { margin-top: 28px; font-size: .75rem; }
+  #footer .footer__credits summary { cursor: pointer; }
+  #footer .footer__credits ul { display: grid; gap: 4px; margin-top: 12px; list-style: none; }
+  #contact .contact__hint { grid-column: 1 / -1; font-size: .9375rem; }
+  #contact .contact__signed { display: grid; gap: 18px; justify-items: start; padding: clamp(24px, 3vw, 44px); }
+}
+</style>
+</head>
+<body class="m-text">
+<a class="u-skip m-link-2" href="#main">Skip to content</a>
+<!-- navigation: top bar: wordmark, section links, Sign in button; phone menu overlay -->
+<header id="nav" data-8b-section="navigation">
+  <div class="nav__bar">
+    <a class="nav__logo" href="#hero">spend<b>ly</b></a>
+    <nav aria-label="Main">
+      <ul class="nav__links">
+        <li><a class="m-link-2" href="#week">The week</a></li>
+        <li><a class="m-link-2" href="#clubs">Features</a></li>
+        <li><a class="m-link-2" href="#board">The rules</a></li>
+        <li><a class="m-link-2" href="#edit">The plan</a></li>
+        <li><a class="m-link-2" href="#journal">Notes</a></li>
+        <li><a class="m-link-2" href="#membership">Ways to save</a></li>
+      </ul>
+    </nav>
+    <a class="m-btn nav__cta" sec:authorize="!isAuthenticated()" th:href="@{/login}"><span class="m-btn__label">Sign in</span></a>
+    <a class="m-btn nav__cta" sec:authorize="isAuthenticated()" th:href="@{/dashboard}"><span class="m-btn__label">Dashboard</span></a>
+    <button class="m-icon-btn nav__toggle" type="button" aria-expanded="false" aria-controls="menu"><span class="u-sr">Open menu</span><span class="m-icon-btn__glyph" aria-hidden="true"></span></button>
+  </div>
+  <div class="menu" id="menu" data-lenis-prevent hidden role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="menu__top">
+      <a class="nav__logo" href="#hero">spend<b>ly</b></a>
+      <button class="m-icon-btn menu__close" type="button"><span class="u-sr">Close menu</span><span class="m-icon-btn__glyph" aria-hidden="true"></span></button>
+    </div>
+    <ul class="menu__links">
+      <li><a href="#week">The week</a></li>
+      <li><a href="#clubs">Features</a></li>
+      <li><a href="#board">The rules</a></li>
+      <li><a href="#edit">The plan</a></li>
+      <li><a href="#journal">Notes</a></li>
+      <li><a href="#membership">Ways to save</a></li>
+      <li><a href="#contact">Sign in</a></li>
+    </ul>
+    <a class="m-btn-2" sec:authorize="!isAuthenticated()" th:href="@{/register}"><span class="m-btn__label">Create your account</span></a>
+    <a class="m-btn-2" sec:authorize="isAuthenticated()" th:href="@{/dashboard}"><span class="m-btn__label">Open dashboard</span></a>
+  </div>
+</header>
+<main id="main">
+<!-- hero: first screen: width-filling two-weight wordmark, tagline, intro, two buttons, portrait, a row of palette chips (animation: scene:hero) -->
+<section id="hero" data-8b-section="hero">
+  <div class="hero__dome-wrap" aria-hidden="true"><div class="hero__dome"></div></div>
+  <div class="hero__head">
+    <h1 class="hero__mark"><span class="u-sr">Spendly</span><span class="hero__visual" aria-hidden="true" style="--len:7"><span class="hero__half hero__half--l"><span class="hero__word hero__word--soft">spend</span></span><span class="hero__half hero__half--r"><span class="hero__word hero__word--life">l<span class="hero__i">y<span class="hero__star"></span></span></span></span></span></h1>
+    <p class="hero__tag m-text-3"><span>Earn</span><span class="hero__tag-line" aria-hidden="true"></span><span class="hero__tag-text">Personal budgets, planned beautifully</span><span class="hero__tag-line" aria-hidden="true"></span><span>Save</span></p>
+  </div>
+  <div class="hero__lede">
+    <div class="hero__lede-inner">
+      <p class="m-text-6">A personal budget planner for people who would rather know than guess. Plan monthly budgets, record what comes in and goes out, and see income against expenses at a glance, with a forecast of how the month will end.</p>
+      <div class="hero__actions">
+        <a class="m-btn" sec:authorize="!isAuthenticated()" th:href="@{/register}"><span class="m-btn__label">Start planning</span></a>
+        <a class="m-btn" sec:authorize="isAuthenticated()" th:href="@{/dashboard}"><span class="m-btn__label">Open dashboard</span></a>
+        <a class="m-link" href="#week">See the week</a>
+      </div>
+    </div>
+  </div>
+  <figure class="hero__photo">
+    <div class="hero__photo-frame"><img th:src="@{/images/landing/hero.jpg}" src="/images/landing/hero.jpg" alt="A laptop on a bright desk beside a coffee cup and yellow flowers" width="1280" height="853" fetchpriority="high"></div>
+  </figure>
+  <div class="hero__swatches" aria-hidden="true">
+    <ul class="hero__group hero__group--l">
+      <li class="hero__swatch"><span class="hero__chip"></span></li>
+      <li class="hero__swatch"><span class="hero__chip"></span></li>
+      <li class="hero__swatch"><span class="hero__chip"></span></li>
+    </ul>
+    <span class="hero__slot"></span>
+    <ul class="hero__group hero__group--r">
+      <li class="hero__swatch"><span class="hero__chip"></span></li>
+      <li class="hero__swatch"><span class="hero__chip"></span></li>
+      <li class="hero__swatch"><span class="hero__chip"></span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- manifesto: statement on an umber ground (animation: scene:manifesto) -->
+<section id="manifesto" data-8b-section="manifesto">
+  <div class="manifesto__ground" aria-hidden="true"></div>
+  <div class="manifesto__inner">
+    <h2 class="m-rule" data-8b-motion="rule"><span class="m-rule__line" aria-hidden="true"></span><span class="m-rule__label">The Spendly principle</span><span class="m-rule__line" aria-hidden="true"></span></h2>
+    <p class="manifesto__text m-text-2">We think money should never be a mystery. <b>Every rupee has a job.</b> A budget is <b>a plan, not a punishment.</b> A bill paid on time is a perfectly calm morning, and the best months are the ones you saw coming. So we built a planner for knowing <b>exactly, quietly,</b> where your money goes.</p>
+    <div class="manifesto__foot">
+      <p class="manifesto__note">Income against expenses, budgets by category, bills and subscriptions, savings goals and a month-end forecast. Built in, not bolted on.</p>
+      <a class="m-link" href="#letter">Read our note</a>
+    </div>
+  </div>
+</section>
+
+<!-- week: seven days as seven arch photos, one colour per day (animation: scene:week) -->
+<section id="week" data-8b-section="week">
+  <div class="week__head">
+    <h2 class="m-text-2">A week, <b>on budget</b></h2>
+    <p class="m-text-6">Seven days, seven colours, one steady rhythm. This is how a week of money moves through Spendly, from payday to the Sunday review.</p>
+  </div>
+  <ol class="week__days">
+    <li class="week__day">
+      <div class="week__clip"><div class="week__frame m-arch"><img th:src="@{/images/landing/week1.jpg}" src="/images/landing/week1.jpg" alt="An Indian two-thousand-rupee banknote" width="1280" height="509" loading="lazy"><span class="week__swatch" aria-hidden="true"></span></div></div>
+      <h3 class="week__title m-text-4">Payday <b>in</b></h3>
+      <p class="week__meta m-text-3">Mon · Umber · Income</p>
+      <p class="week__note">Salary lands and the month's plan is ready before you are.</p>
+    </li>
+    <li class="week__day">
+      <div class="week__clip"><div class="week__frame m-arch"><img th:src="@{/images/landing/week2.jpg}" src="/images/landing/week2.jpg" alt="A market stall piled with fresh vegetables" width="1000" height="750" loading="lazy"><span class="week__swatch" aria-hidden="true"></span></div></div>
+      <h3 class="week__title m-text-4">Groceries, <b>logged</b></h3>
+      <p class="week__meta m-text-3">Tue · Rust · Expenses</p>
+      <p class="week__note">A few taps per receipt, sorted straight into its category.</p>
+    </li>
+    <li class="week__day">
+      <div class="week__clip"><div class="week__frame m-arch"><img th:src="@{/images/landing/week3.jpg}" src="/images/landing/week3.jpg" alt="Commuters inside a Mumbai local train" width="1280" height="960" loading="lazy"><span class="week__swatch" aria-hidden="true"></span></div></div>
+      <h3 class="week__title m-text-4">The daily <b>commute</b></h3>
+      <p class="week__meta m-text-3">Wed · Peach · Transport</p>
+      <p class="week__note">Metro, autos and cabs add up. Now you can see by how much.</p>
+    </li>
+    <li class="week__day">
+      <div class="week__clip"><div class="week__frame m-arch"><img th:src="@{/images/landing/week4.jpg}" src="/images/landing/week4.jpg" alt="A mobile phone lying on a wooden table" width="1280" height="1707" loading="lazy"><span class="week__swatch" aria-hidden="true"></span></div></div>
+      <h3 class="week__title m-text-4">Bills, <b>handled</b></h3>
+      <p class="week__meta m-text-3">Thu · Apricot · Recurring</p>
+      <p class="week__note">Rent, broadband and the phone plan, flagged before they are due.</p>
+    </li>
+    <li class="week__day">
+      <div class="week__clip"><div class="week__frame m-arch"><img th:src="@{/images/landing/week5.jpg}" src="/images/landing/week5.jpg" alt="A slice of chocolate cake and an iced coffee on a café tray" width="1280" height="960" loading="lazy"><span class="week__swatch" aria-hidden="true"></span></div></div>
+      <h3 class="week__title m-text-4">Dinner <b>out</b></h3>
+      <p class="week__meta m-text-3">Fri · Powder · Wants</p>
+      <p class="week__note">Wants have a budget too. Enjoy it, then see what is left.</p>
+    </li>
+    <li class="week__day">
+      <div class="week__clip"><div class="week__frame m-arch"><img th:src="@{/images/landing/week6.jpg}" src="/images/landing/week6.jpg" alt="A busy street market with shoppers and a rider carrying bags" width="1280" height="852" loading="lazy"><span class="week__swatch" aria-hidden="true"></span></div></div>
+      <h3 class="week__title m-text-4">Weekend <b>market</b></h3>
+      <p class="week__meta m-text-3">Sat · Sky · Forecast</p>
+      <p class="week__note">Safe-to-spend tells you what the weekend can take.</p>
+    </li>
+    <li class="week__day">
+      <div class="week__clip"><div class="week__frame m-arch"><img th:src="@{/images/landing/week7.jpg}" src="/images/landing/week7.jpg" alt="Coffee, notebooks and a pen on a wooden table" width="1280" height="853" loading="lazy"><span class="week__swatch" aria-hidden="true"></span></div></div>
+      <h3 class="week__title m-text-4">The Sunday <b>review</b></h3>
+      <p class="week__meta m-text-3">Sun · Linen · Reports</p>
+      <p class="week__note">Income against expenses, ready with coffee.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- clubs: four tiles with a giant initial each: track, analyse, optimise, predict -->
+<section id="clubs" data-8b-section="clubs">
+  <div class="clubs__head">
+    <h2 class="m-text-2" data-8b-motion="embolden">Four ideas, <b>one plan</b></h2>
+    <p class="m-text-6">Tracking, analysis, budgets and the forecast all read from the same ledger of your money, so every number on every screen agrees with every other one.</p>
+  </div>
+  <ul class="clubs__grid">
+    <li class="clubs__tile m-surface" data-8b-motion="setdown">
+      <span class="clubs__mono" aria-hidden="true">T<span class="clubs__seal">spendly</span></span>
+      <h3 class="m-text-4">Track <b>everything</b></h3>
+      <p class="clubs__when m-text-3">Income · Expenses · Transfers · Accounts</p>
+      <p class="clubs__text">Bank, cash, wallets and credit cards in one place, with every rupee in or out tied to a category and a date.</p>
+    </li>
+    <li class="clubs__tile m-surface-2" data-8b-motion="setdown">
+      <span class="clubs__mono" aria-hidden="true">A<span class="clubs__seal">spendly</span></span>
+      <h3 class="m-text-4">Analyze <b>patterns</b></h3>
+      <p class="clubs__when m-text-3">Categories · Trends · Needs vs wants</p>
+      <p class="clubs__text">See where the money went this month, how it compares with the last, and which habits are growing.</p>
+    </li>
+    <li class="clubs__tile m-surface-3" data-8b-motion="setdown">
+      <span class="clubs__mono" aria-hidden="true">O<span class="clubs__seal">spendly</span></span>
+      <h3 class="m-text-4">Optimize <b>spending</b></h3>
+      <p class="clubs__when m-text-3">Budgets · Recurring costs · Goals</p>
+      <p class="clubs__text">Monthly budgets per category, subscriptions you can actually see, and savings goals with a monthly amount.</p>
+    </li>
+    <li class="clubs__tile m-surface-4" data-8b-motion="setdown">
+      <span class="clubs__mono" aria-hidden="true">P<span class="clubs__seal">spendly</span></span>
+      <h3 class="m-text-4">Predict <b>the month</b></h3>
+      <p class="clubs__when m-text-3">Month-end balance · Overspending risks</p>
+      <p class="clubs__text">Bills still due and your spending pace roll into a forecast, with a warning before a budget runs out.</p>
+    </li>
+  </ul>
+</section>
+
+<!-- board: moodboard collage of twelve tiles (animation: scene:board) -->
+<section id="board" data-8b-section="board">
+  <div class="board__head">
+    <h2 class="m-text-2">Money rules we <b>live by</b></h2>
+    <p class="board__lede">The house rules of a calm budget, pinned to the fridge where everybody can see them.</p>
+  </div>
+  <ul class="board__grid">
+    <li class="board__tile board__tile--car"><img th:src="@{/images/landing/coin-jar.jpg}" src="/images/landing/coin-jar.jpg" alt="A glass jar full of coins from around the world" width="1280" height="1201" loading="lazy"></li>
+    <li class="board__tile board__tile--poster m-surface"><p class="board__poster"><span>Plan</span> <span>First</span></p></li>
+    <li class="board__tile board__tile--legs"><img th:src="@{/images/landing/receipt.jpg}" src="/images/landing/receipt.jpg" alt="A printed restaurant receipt" width="1280" height="1707" loading="lazy"></li>
+    <li class="board__tile board__tile--lockup m-surface-2"><p class="board__lockup"><span>Pay</span> <span class="board__script m-text-5">yourself</span> <span>First</span></p></li>
+    <li class="board__tile board__tile--drink"><img th:src="@{/images/landing/latte.jpg}" src="/images/landing/latte.jpg" alt="A cup of coffee with latte art" width="1280" height="853" loading="lazy"></li>
+    <li class="board__tile board__tile--lips"><img th:src="@{/images/landing/piggy-bank.jpg}" src="/images/landing/piggy-bank.jpg" alt="A pink piggy bank" width="1280" height="1082" loading="lazy"></li>
+    <li class="board__tile board__tile--gingham"><span class="m-badge">Payday week</span></li>
+    <li class="board__tile board__tile--chair"><img th:src="@{/images/landing/calculator.jpg}" src="/images/landing/calculator.jpg" alt="A small pocket calculator" width="1280" height="1565" loading="lazy"></li>
+    <li class="board__tile board__tile--ooo m-surface-4"><p class="board__ooo"><span class="board__ooo-big">over <b>budget</b></span><span class="m-text-3">Plan already adjusted</span></p></li>
+    <li class="board__tile board__tile--stripes"><p class="board__quote">track more, <b>worry less</b></p></li>
+    <li class="board__tile board__tile--gift"><img th:src="@{/images/landing/wallet.jpg}" src="/images/landing/wallet.jpg" alt="A leather wallet holding cards and notes" width="1280" height="720" loading="lazy"></li>
+    <li class="board__tile board__tile--roses"><img th:src="@{/images/landing/spice-market.jpg}" src="/images/landing/spice-market.jpg" alt="Sacks of spices at an evening market in India" width="1280" height="960" loading="lazy"></li>
+  </ul>
+</section>
+
+<!-- edit: four features with photo, details and status (animation: scene:edit) -->
+<section id="edit" data-8b-section="edit">
+  <div class="edit__head">
+    <h2 class="m-text-2" data-8b-motion="embolden">The budget <b>edit</b></h2>
+    <p class="m-text-6">How money lives in Spendly: budgets, goals, accounts and the forecast. Four parts of one plan.</p>
+  </div>
+  <div class="edit__body">
+    <div class="edit__stage">
+      <figure class="edit__shot"><div class="edit__slide"><div class="edit__hold"><div class="edit__arch m-arch"><img th:src="@{/images/landing/edit1.jpg}" src="/images/landing/edit1.jpg" alt="An old savings passbook with handwritten entries" width="1280" height="968" loading="lazy"></div></div></div></figure>
+      <figure class="edit__shot"><div class="edit__slide"><div class="edit__hold"><div class="edit__arch m-arch"><img th:src="@{/images/landing/edit2.jpg}" src="/images/landing/edit2.jpg" alt="Neat stacks of coins" width="1280" height="1920" loading="lazy"></div></div></div></figure>
+      <figure class="edit__shot"><div class="edit__slide"><div class="edit__hold"><div class="edit__arch m-arch"><img th:src="@{/images/landing/edit3.jpg}" src="/images/landing/edit3.jpg" alt="Two credit cards" width="1280" height="960" loading="lazy"></div></div></div></figure>
+      <figure class="edit__shot"><div class="edit__slide"><div class="edit__hold"><div class="edit__arch m-arch"><img th:src="@{/images/landing/edit4.jpg}" src="/images/landing/edit4.jpg" alt="A row of one-rupee coins on a dark surface" width="1280" height="720" loading="lazy"></div></div></div></figure>
+    </div>
+    <div class="edit__list">
+      <article class="edit__item">
+        <h3 class="m-text-4">Budgets, <b>by category</b></h3>
+        <p class="m-text-3">Monthly limits · Copy or suggest</p>
+        <p>Give every category a monthly limit and compare the plan with your income. Copy last month in one click, or let Spendly suggest limits from what you actually spent.</p>
+        <p class="edit__stock">On track<span class="m-text-3">spending against the plan</span></p>
+        <a class="m-btn" th:href="@{/budgets}"><span class="m-btn__label">Budgets</span></a>
+      </article>
+      <article class="edit__item">
+        <h3 class="m-text-4">Savings that <b>add up</b></h3>
+        <p class="m-text-3">Goals · Target dates · Monthly amount</p>
+        <p>Name a goal, give it a date, and Spendly works out what to put aside each month to get there, from an emergency fund to a Goa trip.</p>
+        <p class="edit__stock">Saving<span class="m-text-3">towards every goal</span></p>
+        <a class="m-btn" th:href="@{/goals}"><span class="m-btn__label">Goals</span></a>
+      </article>
+      <article class="edit__item">
+        <h3 class="m-text-4">Cards, <b>under control</b></h3>
+        <p class="m-text-3">Accounts · Transfers · Card bills</p>
+        <p>Bank, cash, wallets and credit cards side by side. Paying the card bill is a transfer, so a purchase is never counted twice.</p>
+        <p class="edit__stock">Balanced<span class="m-text-3">across every account</span></p>
+        <a class="m-btn" th:href="@{/accounts}"><span class="m-btn__label">Accounts</span></a>
+      </article>
+      <article class="edit__item">
+        <h3 class="m-text-4">Every rupee, <b>forecast</b></h3>
+        <p class="m-text-3">Month-end balance · Safe to spend</p>
+        <p>Bills still due, income still to come and your spending pace roll into a month-end forecast and a daily safe-to-spend figure.</p>
+        <p class="edit__stock">Forecast<span class="m-text-3">updated as you spend</span></p>
+        <a class="m-btn" th:href="@{/insights}"><span class="m-btn__label">Insights</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- journal: a tall peach poster of two words beside three entries (animation: scene:journal) -->
+<section id="journal" data-8b-section="journal">
+  <div class="journal__head">
+    <h2 class="m-text-2" data-8b-motion="embolden">Notes from the <b>money jar</b></h2>
+    <a class="m-link" href="#board">The rules</a>
+  </div>
+  <div class="journal__layout">
+    <div class="journal__poster m-surface" aria-hidden="true">
+      <p class="journal__type"><span class="journal__word">Money</span><span class="journal__word">Notes</span></p>
+    </div>
+    <ol class="journal__list">
+      <li class="journal__entry">
+        <div class="journal__thumb"><img th:src="@{/images/landing/j1.jpg}" src="/images/landing/j1.jpg" alt="A long grocery receipt" width="1280" height="1707" loading="lazy"></div>
+        <div class="journal__text">
+          <span class="m-badge">Ledger</span>
+          <h3 class="m-text-4">Why transfers are <b>never spending</b></h3>
+          <p>Moving money from your bank to your wallet, or paying your card bill, is a transfer. It changes balances, not your income or expenses, so nothing is counted twice.</p>
+          <p class="m-text-3">Money rules</p>
+        </div>
+      </li>
+      <li class="journal__entry">
+        <div class="journal__thumb"><img th:src="@{/images/landing/j2.jpg}" src="/images/landing/j2.jpg" alt="A glass jar with banknotes and coins saved inside" width="1280" height="1920" loading="lazy"></div>
+        <div class="journal__text">
+          <span class="m-badge">Saving</span>
+          <h3 class="m-text-4">Paying <b>yourself first</b></h3>
+          <p>Set a savings target as a share of your income. Spendly keeps it aside before it tells you what is safe to spend.</p>
+          <p class="m-text-3">Money rules</p>
+        </div>
+      </li>
+      <li class="journal__entry">
+        <div class="journal__thumb"><img th:src="@{/images/landing/j3.jpg}" src="/images/landing/j3.jpg" alt="A laptop on a white desk beside stacks of books" width="1280" height="853" loading="lazy"></div>
+        <div class="journal__text">
+          <span class="m-badge">Health</span>
+          <h3 class="m-text-4">A score for <b>the whole picture</b></h3>
+          <p>Savings rate, budget discipline, emergency cushion, debt and fixed costs roll into one health score out of 100, with advice for each.</p>
+          <p class="m-text-3">Money rules</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- letter: a note from the team with a handwritten signature and an arch portrait (animation: scene:letter) -->
+<section id="letter" data-8b-section="letter">
+  <div class="letter__layout">
+    <div class="letter__portrait m-arch"><img th:src="@{/images/landing/letter.jpg}" src="/images/landing/letter.jpg" alt="Friends sharing a meal around a table" width="1280" height="1707" loading="lazy"></div>
+    <div class="letter__sheet m-surface-4">
+      <h2 class="m-text-2" data-8b-motion="embolden">Dear <b>you,</b></h2>
+      <div class="letter__body">
+        <p>Spendly started with a simple frustration: a salary that arrived on the first and had somehow disappeared by the twentieth, and spreadsheets we never quite kept up. We wanted a place where every rupee had a job, and the end of the month was never a surprise.</p>
+        <p>So everything goes into one ledger, every budget sits next to what you actually spent, and the forecast tells you how the month will end before it does. The rest stays out of the way.</p>
+        <p>Come for the budget. Stay for the calm.</p>
+      </div>
+      <div class="letter__sign">
+        <p class="letter__signature m-text-5" data-8b-motion="ink">Spendly</p>
+        <p class="m-text-3">The Spendly team</p>
+      </div>
+    </div>
+  </div>
+  <p class="letter__motto m-text-2" aria-hidden="true" style="--len:15">Spend <b>mindfully.</b></p>
+</section>
+
+<!-- membership: three ways to budget on cards that turn over (animation: scene:membership) -->
+<section id="membership" data-8b-section="membership">
+  <div class="membership__head">
+    <h2 class="membership__title m-text-2" style="--len:14">Pick your <b>plan</b></h2>
+    <p class="m-text-6">Three ways to budget. Spendly supports all of them, so start with the one that sounds most like you.</p>
+  </div>
+  <ul class="membership__cards">
+    <li class="membership__card">
+      <div class="membership__flip">
+        <div class="membership__back m-surface-2" aria-hidden="true"><span class="membership__mono">s<b>p</b></span><span class="m-text-3">The steady split</span></div>
+        <article class="membership__front m-surface">
+          <h3 class="m-text-4">The 50 / 30 / <b>20</b></h3>
+          <p class="membership__price"><data value="50">50</data><span class="m-text-3">% on needs</span></p>
+          <p>For a simple, steady split.</p>
+          <ul class="membership__perks">
+            <li>Half on needs: rent, groceries, bills</li>
+            <li>Thirty per cent on wants</li>
+            <li>Twenty per cent saved, every month</li>
+            <li>Needs vs wants report built in</li>
+          </ul>
+          <a class="m-btn" th:href="@{/register}"><span class="m-btn__label">Start free</span></a>
+        </article>
+      </div>
+    </li>
+    <li class="membership__card">
+      <div class="membership__flip">
+        <div class="membership__back m-surface" aria-hidden="true"><span class="membership__mono">s<b>p</b></span><span class="m-text-3">Every rupee a job</span></div>
+        <article class="membership__front m-surface-2">
+          <h3 class="m-text-4">Zero-<b>based</b></h3>
+          <p class="membership__price"><data value="0">0</data><span class="m-text-3">left unplanned</span></p>
+          <p>For people who like a plan.</p>
+          <ul class="membership__perks">
+            <li>A budget for every category</li>
+            <li>Copy last month in one click</li>
+            <li>Suggestions from real spending</li>
+            <li>Warnings before you overspend</li>
+          </ul>
+          <a class="m-btn-2" th:href="@{/register}"><span class="m-btn__label">Start free</span></a>
+        </article>
+      </div>
+    </li>
+    <li class="membership__card">
+      <div class="membership__flip">
+        <div class="membership__back m-surface-2" aria-hidden="true"><span class="membership__mono">s<b>p</b></span><span class="m-text-3">Savers with goals</span></div>
+        <article class="membership__front m-surface-3">
+          <h3 class="m-text-4">Pay yourself <b>first</b></h3>
+          <p class="membership__price"><data value="20">20</data><span class="m-text-3">% kept aside</span></p>
+          <p>For savers with somewhere to go.</p>
+          <ul class="membership__perks">
+            <li>A savings target as a share of income</li>
+            <li>Goals with dates and monthly amounts</li>
+            <li>Safe to spend, after saving</li>
+            <li>Emergency cushion in the health score</li>
+          </ul>
+          <a class="m-btn" th:href="@{/register}"><span class="m-btn__label">Start free</span></a>
+        </article>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- faq: questions and answers (native <details>) beside a heading and a sign-in link -->
+<section id="faq" data-8b-section="faq">
+  <div class="faq__layout">
+    <div class="faq__intro">
+      <h2 class="m-text-2" data-8b-motion="embolden">Good <b>questions</b></h2>
+      <p>Anything else? The quickest answer is to sign in as the demo user and look around.</p>
+      <a class="m-link" href="#contact">Go to sign in</a>
+    </div>
+    <div class="faq__list">
+      <details class="faq__item">
+        <summary class="faq__q"><span class="m-text-4">Do transfers count as spending?</span><span class="faq__icon" aria-hidden="true"><span class="faq__fill"></span></span></summary>
+        <p class="faq__a">No. Moving money between your own accounts, including paying a credit-card bill, changes balances but never your income or expenses.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q"><span class="m-text-4">How does the month-end forecast work?</span><span class="faq__icon" aria-hidden="true"><span class="faq__fill"></span></span></summary>
+        <p class="faq__a">It adds the bills and income still due from your recurring items to your day-to-day spending pace, blended with the last three months early in the month.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q"><span class="m-text-4">What does safe to spend mean?</span><span class="faq__icon" aria-hidden="true"><span class="faq__fill"></span></span></summary>
+        <p class="faq__a">This month's income, minus what you have spent, the bills still due and your savings target. Divided by the days left, it is a daily allowance.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q"><span class="m-text-4">Can I set budgets quickly?</span><span class="faq__icon" aria-hidden="true"><span class="faq__fill"></span></span></summary>
+        <p class="faq__a">Yes. Copy last month's budgets in one click, or let Spendly suggest each category's limit from your last three months of spending.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q"><span class="m-text-4">Can I use a currency other than rupees?</span><span class="faq__icon" aria-hidden="true"><span class="faq__fill"></span></span></summary>
+        <p class="faq__a">Yes. Pick a currency when you sign up or change it under My account. Rupees use Indian grouping, like 1,25,000.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q"><span class="m-text-4">Who can see my money?</span><span class="faq__icon" aria-hidden="true"><span class="faq__fill"></span></span></summary>
+        <p class="faq__a">Only you. Every account sees only its own books, and passwords are stored as one-way hashes.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- contact: sign-in form beside an arch photo of the front door (animation: scene:contact) -->
+<section id="contact" data-8b-section="contact">
+  <div class="contact__layout">
+    <div class="contact__door m-arch">
+      <img th:src="@{/images/landing/door.jpg}" src="/images/landing/door.jpg" alt="A tall blue front door with colourful tiles" width="1280" height="2048" loading="lazy">
+      <span class="contact__leaf contact__leaf--l" aria-hidden="true"></span>
+      <span class="contact__leaf contact__leaf--r" aria-hidden="true"></span>
+    </div>
+    <div class="contact__info">
+      <h2 class="m-text-2" data-8b-motion="embolden">Come <b>in</b></h2>
+      <div class="contact__details">
+        <div>
+          <h3 class="m-text-3">Accounts</h3>
+          <p>Bank, cash, wallets,<br>cards and savings</p>
+        </div>
+        <div>
+          <h3 class="m-text-3">Budgets</h3>
+          <p>Monthly, by category,<br>with suggestions</p>
+        </div>
+        <div>
+          <h3 class="m-text-3">Planning</h3>
+          <p>Recurring bills<br>and savings goals</p>
+        </div>
+        <div>
+          <h3 class="m-text-3">Insight</h3>
+          <p>A forecast, risks<br>and a health score</p>
+        </div>
+      </div>
+      <form sec:authorize="!isAuthenticated()" class="contact__form m-surface-4" th:action="@{/login}" method="post">
+        <label class="m-field"><span class="m-field__label">Username</span><input name="username" type="text" autocomplete="username" required></label>
+        <label class="m-field" for="landing-password"><span class="m-field__label">Password</span><span class="password-field"><input id="landing-password" name="password" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-password-toggle aria-controls="landing-password" aria-pressed="false" aria-label="Show password"><svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-shut" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.5 10.5 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.5-.6 4.9-1.4M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span></label>
+        <label class="contact__remember contact__wide"><input type="checkbox" name="remember-me"> Keep me signed in</label>
+        <button class="m-btn" type="submit"><span class="m-btn__label">Sign in</span></button>
+        <p class="contact__hint contact__wide">New here? <a class="m-link" th:href="@{/register}">Create an account</a> · or try <b>demo</b> / <b>demo123</b></p>
+      </form>
+      <div sec:authorize="isAuthenticated()" class="contact__signed m-surface-4">
+        <p class="m-text-6">You're signed in<span th:text="|, ${#authentication.name}|"></span>.</p>
+        <a class="m-btn" th:href="@{/dashboard}"><span class="m-btn__label">Open dashboard</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- footer: width-filling Spendly wordmark, links, copyright and the Design: 8B credit -->
+<footer id="footer" data-8b-section="footer">
+  <p class="footer__mark" aria-hidden="true" data-8b-motion="embolden"><span style="--len:7">spend<b>ly</b></span></p>
+  <div class="footer__cols">
+    <div>
+      <h2 class="m-text-3">Spendly</h2>
+      <p>Money, planned beautifully.<br>One ledger, every account.</p>
+    </div>
+    <div>
+      <h2 class="m-text-3">Explore</h2>
+      <ul>
+        <li><a class="m-link" href="#week">The week</a></li>
+        <li><a class="m-link" href="#clubs">Features</a></li>
+        <li><a class="m-link" href="#board">The rules</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="m-text-3">Learn</h2>
+      <ul>
+        <li><a class="m-link" href="#journal">Notes</a></li>
+        <li><a class="m-link" href="#membership">Ways to save</a></li>
+        <li><a class="m-link" href="#faq">Questions</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="m-text-3">Account</h2>
+      <ul>
+        <li sec:authorize="!isAuthenticated()"><a class="m-link" th:href="@{/login}">Sign in</a></li>
+        <li sec:authorize="!isAuthenticated()"><a class="m-link" th:href="@{/register}">Create account</a></li>
+        <li sec:authorize="isAuthenticated()"><a class="m-link" th:href="@{/dashboard}">Dashboard</a></li>
+        <li sec:authorize="isAuthenticated()"><a class="m-link" th:href="@{/account}">My account</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__base">
+    <p>© 2026 Spendly. Personal budget planner. · Design: <a href="https://8b.com/" style="color:inherit" data-8b-credit>8B</a></p>
+    <p class="footer__legal"><a class="m-link" href="#hero">Back to top</a></p>
+  </div>
+  <details class="footer__credits">
+    <summary class="m-text-3">Photo credits · Wikimedia Commons</summary>
+    <ul>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Coffee-desk-laptop-notebook_(24244320481).jpg">Coffee-desk-laptop-notebook (24244320481)</a> · www.Pixel.la Free Stock Photos · CC0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:%E2%82%B92000_Indian_Rupee_Banknote.jpg">₹2000 Indian Rupee Banknote</a> · Ravi Dwivedi · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Vegetable_Stall,_Brigg_Market_-_geograph.org.uk_-_1725905.jpg">Vegetable Stall, Brigg Market - geograph.org.uk - 1725905</a> · David Wright · CC BY-SA 2.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:LocalTrainMumbai.jpg">LocalTrainMumbai</a> · Satish Krishnamurthy · CC BY-SA 2.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:LG_CU920_(Vu)_phone.jpg">LG CU920 (Vu) phone</a> · Evan0512 · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Royal_Chocolate_Cake_(Loaf),_The_Coffee_Bean_%26_Tea_Leaf_@_KLIA_2,_Gate_L,_2025_(01).jpg">Royal Chocolate Cake (Loaf), The Coffee Bean &amp; Tea Leaf @ KLIA 2, Gate L, 2025 (01)</a> · Bahnfrend · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:DSC_6407_Busy_street_market_scene_with_a_motorbike_rider_carrying_bags_as_pedestrians_browse_colorful_stalls_and_shops_under_bright_daylight.jpg">DSC 6407 Busy street market scene with a motorbike rider carrying bags as pedestrians browse colorful stalls and shops under bright daylight</a> · PattayaPatrol · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Coffee,_notebooks_and_pen_(Unsplash).jpg">Coffee, notebooks and pen (Unsplash)</a> · Freddy Castro readysetfreddy · CC0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:A_jar_of_world_coins.jpg">A jar of world coins</a> · Billjones94 · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:ReceiptSwiss.jpg">ReceiptSwiss</a> · Audrius Meskauskas (Audriusa) · CC BY-SA 3.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Cup_of_coffee_with_latte_art_2016.jpg">Cup of coffee with latte art 2016</a> · Abdulrohmatt · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Pink_Piggy_Bank_(5737823348).jpg">Pink Piggy Bank (5737823348)</a> · Ken Teegardin from Boulder, Boulder · CC BY-SA 2.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Citizen_SLD-100NR_calculator.jpg">Citizen SLD-100NR calculator</a> · LoMit · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Leather_bi-fold_wallet_by_Eugene_Pik_(2021)_04.jpg">Leather bi-fold wallet by Eugene Pik (2021) 04</a> · Eugenepik · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Indian_spice_market.jpg">Indian spice market</a> · The open draft · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:%D0%9A%D0%BD%D0%B8%D0%B6%D0%BA%D0%B0_%D1%81%D0%B1%D0%B5%D1%80%D0%B5%D0%B3%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%E2%84%96_880054_%D0%BF%D0%BE%D0%BB%D1%8C%D1%81%D0%BA%D0%BE%D0%B9_%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D0%BE-%D1%81%D0%B1%D0%B5%D1%80%D0%B5%D0%B3%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9_%D0%BA%D0%B0%D1%81%D1%81%D1%8B._%D0%97%D0%B0%D0%BF%D0%B8%D1%81%D0%B8_%D0%BF%D0%BE_%D1%81%D1%87%D1%91%D1%82%D1%83--moneymuseum-by.jpg">Книжка сберегательная № 880054 польской почтово-сберегательной кассы. Записи по счёту--moneymuseum-by</a> · Pocztowa Kasa Oszczędności (issuing institution); printed designer not identified; personal entries by the depositor and postal clerks; faithful museum digitization · Public domain</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Stack_of_coins_0214.jpg">Stack of coins 0214</a> · Dori · Public domain</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Credit-cards.jpg">Credit-cards</a> · Lotus Head from Johannesburg, Gauteng, South Africa · CC BY-SA 2.5</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:One_Rupee_Indian_coins.JPG">One Rupee Indian coins</a> · Reserve Bank of India / Kshitij Gupta · CC BY-SA 3.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Grocery_Store_Receipt_in_Vienna.jpg">Grocery Store Receipt in Vienna</a> · Grandmaster Huon · Public domain</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Sparepenger_p%C3%A5_Norgesglass.jpg">Sparepenger på Norgesglass</a> · Øyvind Holmstad · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Laptop_on_desk_book_stacks_(Unsplash).jpg">Laptop on desk book stacks (Unsplash)</a> · freddie marriage fredmarriage · CC0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Friends_Sharing_a_Meal_03.jpg">Friends Sharing a Meal 03</a> · Coolbrizzy · CC BY-SA 4.0</li>
+      <li><a class="m-link" href="https://commons.wikimedia.org/wiki/File:Funchal_(Madeira,_Portugal),_Rua_de_Santa_Maria_39_--_2025_--_0831.jpg">Funchal (Madeira, Portugal), Rua de Santa Maria 39 -- 2025 -- 0831</a> · Dietmar Rabich · CC BY-SA 4.0</li>
+    </ul>
+  </details>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js"></script>
+<script data-8b-part="motion-queue">
+(() => {
+  'use strict';
+  const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
+  const parsed = document.readyState === 'loading' ? new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, { once: true })) : Promise.resolve();
+  const ready = () => Promise.all([fonts, parsed]).then(() => firsts);
+  const nextTask = () => window.scheduler?.yield?.() ?? new Promise(resolve => setTimeout(resolve));
+  const refresh = () => {
+    if (typeof window.refreshScroll === 'function') return window.refreshScroll();
+    window.ScrollTrigger?.sort(); window.ScrollTrigger?.refresh();
+  };
+  const run = (setup, name) => {
+    for (const trigger of window.ScrollTrigger?.getAll() || []) if (!trigger.end && window.ScrollTrigger.getAll().includes(trigger)) trigger.refresh(0, 1);
+    const context = window.gsap.context(() => {});
+    const log = new MutationObserver(() => {});
+    log.observe(document.documentElement, { attributes: true, attributeOldValue: true, subtree: true });
+    let failure = null, records;
+    try { context.add(() => { try { setup(); } catch (error) { failure = error; } }); }
+    finally { records = log.takeRecords(); log.disconnect(); }
+    if (!failure) return true;
+    try { context.revert(); } catch (error) { console.error(name, 'revert failed', error); }
+    for (const { target, attributeName, oldValue } of records.reverse()) {
+      const now = target.getAttribute(attributeName);
+      if (oldValue == null) { if (now != null) target.removeAttribute(attributeName); }
+      else if (now !== oldValue) target.setAttribute(attributeName, oldValue);
+    }
+    console.error(name, failure);
+    return false;
+  };
+  let firsts = Promise.resolve(), tail = null, pending = 0, lazy = null, building = 0;
+  window.queueMotion = (setup, { first = false, near, id } = {}) => {
+    if (!window.gsap || typeof setup !== 'function') return;
+    const name = id || document.currentScript?.getAttribute('data-8b-part') || 'motion';
+    if (near instanceof Element && window.IntersectionObserver) {
+      const watch = new IntersectionObserver(entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        watch.disconnect();
+        building++;
+        lazy = (lazy || ready()).then(nextTask).then(() => run(setup, name)).finally(() => { if (!--building) refresh(); });
+      }, { rootMargin: '100% 0px' });
+      watch.observe(near);
+      return;
+    }
+    if (first) firsts = firsts.then(() => fonts).then(() => { if (!run(setup, name)) refresh(); });
+    else {
+      pending++;
+      tail = (tail || ready()).then(nextTask).then(() => run(setup, name))
+        .finally(() => { if (!--pending) refresh(); });
+    }
+    window.motionReady = Promise.all([firsts, tail]);
+  };
+  window.adjacent = (a, b) => {
+    const order = [...document.querySelectorAll('[data-8b-section]')].filter(section => section.getAttribute('data-8b-section') !== 'navigation').map(section => section.id);
+    return order.indexOf(a) >= 0 && order[order.indexOf(a) + 1] === b;
+  };
+})();
+</script>
+<script data-8b-part="page-init">
+gsap.registerPlugin(ScrollTrigger, SplitText);
+ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,resize' });
+function refreshScroll() {
+  const bar = document.querySelector('#nav .nav__bar');
+  const offset = bar ? bar.offsetHeight : 0;
+  document.documentElement.style.scrollPaddingTop = offset + 'px';
+  if (window.lenis && typeof window.lenis.options.anchors === 'object') window.lenis.options.anchors.offset = -offset;
+  ScrollTrigger.sort();
+  ScrollTrigger.refresh();
+}
+gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+  const bar = document.querySelector('#nav .nav__bar');
+  const lenis = window.lenis = new Lenis({ lerp: .075, wheelMultiplier: .9, anchors: { offset: -(bar ? bar.offsetHeight : 0) } });
+  const tick = time => lenis.raf(time * 1000);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(tick);
+  gsap.ticker.lagSmoothing(0);
+  return () => { gsap.ticker.remove(tick); gsap.ticker.lagSmoothing(500, 33); lenis.destroy(); window.lenis = null; };
+});
+</script>
+<script data-8b-part="motion">
+const effects = {
+  embolden(targets, { from = 200, stagger = .06, duration = 1.1, ...vars } = {}) {
+    const list = gsap.utils.toArray(targets);
+    const rest = list.map(element => getComputedStyle(element).fontWeight);
+    return gsap.timeline(vars).fromTo(list, { fontWeight: from }, { fontWeight: i => rest[i], duration, ease: 'power2.out', stagger });
+  },
+  setdown(element, vars = {}) {
+    const index = Array.prototype.indexOf.call(element.parentElement.children, element);
+    return gsap.timeline(vars)
+      .from(element, { y: 90, rotation: index % 2 ? 5 : -5, scale: .94, duration: 1.3, ease: 'expo.out' })
+      .from(element, { opacity: 0, duration: .45, ease: 'none' }, 0);
+  },
+  rule(element, vars = {}) {
+    return gsap.timeline(vars)
+      .from(element.querySelectorAll('.m-rule__line'), { scaleX: 0, duration: 1.3, ease: 'power3.inOut' })
+      .from(element.querySelector('.m-rule__label'), { opacity: 0, y: 10, duration: .7, ease: 'power2.out' }, .35);
+  },
+  ink(element, vars = {}) {
+    return gsap.timeline(vars).fromTo(element, { clipPath: 'inset(-40% 100% -40% -10%)' }, { clipPath: 'inset(-40% -10% -40% -10%)', duration: 1.8, ease: 'power2.inOut', clearProps: 'clipPath' });
+  }
+};
+function lockWords(targets) {
+  const split = SplitText.create(targets, { type: 'words' });
+  const words = split.words;
+  const measure = () => {
+    const weights = words.map(word => word.style.fontWeight);
+    words.forEach(word => { word.style.width = ''; word.style.fontWeight = ''; word.style.display = 'inline-block'; });
+    const widths = words.map(word => word.getBoundingClientRect().width);
+    words.forEach((word, i) => { word.style.fontWeight = weights[i]; word.style.width = widths[i] + 'px'; });
+  };
+  measure();
+  ScrollTrigger.addEventListener('refreshInit', measure);
+  return { words, revert() { ScrollTrigger.removeEventListener('refreshInit', measure); split.revert(); } };
+}
+document.querySelectorAll('[data-8b-section]').forEach(section => {
+  Object.keys(effects).forEach(name => {
+    const elements = [...section.querySelectorAll(`[data-8b-motion~="${name}"]`)];
+    if (!elements.length) return;
+    const id = `effect:${name}:${section.id}`;
+    queueMotion(() => {
+      gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+        const reverts = [];
+        elements.forEach((element, i) => {
+          let target = element;
+          if (name === 'embolden') {
+            const lock = lockWords(element.querySelectorAll('b'));
+            reverts.push(lock.revert);
+            target = lock.words;
+          }
+          ScrollTrigger.create({ id: `${id}:${i + 1}`, trigger: element, start: 'top 88%', once: true, animation: effects[name](target) });
+        });
+        return () => reverts.forEach(revert => revert());
+      });
+    }, section.getBoundingClientRect().top < innerHeight ? { first: true, id } : { near: section, id });
+  });
+});
+</script>
+<script data-8b-part="scene:hero">
+queueMotion(() => {
+  gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+    if (!adjacent('hero', 'manifesto')) return;
+    const hero = document.getElementById('hero');
+    const q = selector => hero.querySelector(selector);
+    const dome = q('.hero__dome'), slot = q('.hero__slot');
+    const g = {};
+    const measure = () => { g.W = hero.clientWidth; g.H = dome.offsetHeight; g.w = slot.offsetWidth; g.h = slot.offsetHeight; };
+    measure();
+    const from = () => `inset(calc(100% - ${g.h}px) calc(50% - ${g.w / 2}px) 0px calc(50% - ${g.w / 2}px) round ${g.w / 2}px ${g.w / 2}px 0px 0px / ${g.w / 2}px ${g.w / 2}px 0px 0px)`;
+    const to = () => `inset(calc(0% - 0px) calc(0% - 0px) 0px calc(0% - 0px) round ${g.W / 2}px ${g.W / 2}px 0px 0px / ${g.H}px ${g.H}px 0px 0px)`;
+    const phone = () => g.W < 720;
+    gsap.timeline({ defaults: { duration: 1 }, scrollTrigger: { id: 'hero:exit', trigger: hero, start: 'bottom bottom', end: 'bottom 30%', scrub: true, invalidateOnRefresh: true, onRefreshInit: measure } })
+      .fromTo(dome, { clipPath: from }, { clipPath: to, ease: 'none' }, 0)
+      .fromTo(q('.hero__word--soft'), { xPercent: 0, yPercent: 0, scale: 1 }, { xPercent: () => phone() ? -8 : -12, yPercent: -16, scale: .84, ease: 'power1.in' }, 0)
+      .fromTo(q('.hero__word--life'), { xPercent: 0, yPercent: 0, scale: 1 }, { xPercent: () => phone() ? 8 : 12, yPercent: -16, scale: .84, ease: 'power1.in' }, 0)
+      .fromTo(q('.hero__tag'), { y: 0, opacity: 1 }, { y: -24, opacity: 0, ease: 'power1.in' }, 0)
+      .fromTo(q('.hero__group--l'), { x: 0, opacity: 1 }, { x: () => -g.W * .3, opacity: 0, ease: 'power1.in' }, 0)
+      .fromTo(q('.hero__group--r'), { x: 0, opacity: 1 }, { x: () => g.W * .3, opacity: 0, ease: 'power1.in' }, 0)
+      .fromTo(q('.hero__photo-frame'), { x: 0, y: 0, rotation: 0 }, { x: () => phone() ? g.W * .18 : g.W * .07, y: () => phone() ? -40 : -70, rotation: 6, ease: 'power1.in' }, 0)
+      .fromTo(q('.hero__lede-inner'), { x: 0, y: 0 }, { x: () => phone() ? 0 : -g.W * .05, y: () => phone() ? -40 : -60, ease: 'power1.in' }, 0)
+      .fromTo(q('.hero__lede-inner'), { opacity: 1 }, { opacity: () => phone() ? 1 : 0, ease: 'power1.in', duration: .7 }, 0);
+  });
+}, { first: true, id: 'scene:hero' });
+</script>
+<script data-8b-part="scene:manifesto">
+queueMotion(() => {
+  gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+    const section = document.getElementById('manifesto');
+    const ground = section.querySelector('.manifesto__ground');
+    if (adjacent('hero', 'manifesto')) {
+      const slot = document.querySelector('#hero .hero__slot');
+      let half = slot.offsetWidth / 2;
+      gsap.timeline({ scrollTrigger: { id: 'manifesto:entry', trigger: section, start: 'top bottom', end: 'top 30%', scrub: true, invalidateOnRefresh: true, onRefreshInit: () => { half = slot.offsetWidth / 2; } } })
+        .fromTo(ground, { clipPath: () => `inset(0px calc(50% - ${half}px) 0px calc(50% - ${half}px))` }, { clipPath: 'inset(0px calc(0% - 0px) 0px calc(0% - 0px))', ease: 'none', duration: 1 }, 0)
+        .fromTo(section.querySelector('.manifesto__inner'), { y: () => innerHeight * .16 }, { y: 0, ease: 'none', duration: 1 }, 0)
+        .fromTo(section.querySelector('.manifesto__inner'), { opacity: 0 }, { opacity: 1, ease: 'power1.out', duration: .2 }, .8);
+    }
+    const text = section.querySelector('.manifesto__text');
+    const lock = lockWords(text);
+    const bold = lock.words.filter(word => word.closest('b'));
+    const read = gsap.timeline({ scrollTrigger: { id: 'manifesto:read', trigger: section, start: () => `top+=${text.offsetTop}px 80%`, end: () => `top+=${text.offsetTop + text.offsetHeight}px 45%`, scrub: .6, invalidateOnRefresh: true } });
+    const plain = getComputedStyle(section).color, accent = bold.length ? getComputedStyle(bold[0]).color : plain;
+    read.add(effects.embolden(lock.words, { from: 200, stagger: .14, duration: 1 }), 0);
+    read.fromTo(bold, { color: plain }, { color: accent, duration: .8, stagger: (i, word) => lock.words.indexOf(word) * .14 - lock.words.indexOf(bold[0]) * .14, ease: 'none' }, lock.words.indexOf(bold[0]) * .14 + .3);
+    return () => lock.revert();
+  });
+}, { id: 'scene:manifesto' });
+</script>
+<script data-8b-part="scene:week">
+queueMotion(() => {
+  const section = document.getElementById('week');
+  const days = [...section.querySelectorAll('.week__day')];
+  gsap.matchMedia().add({ desk: '(min-width: 900px)', phone: '(max-width: 899px)', motion: '(prefers-reduced-motion: no-preference)' }, context => {
+    if (!context.conditions.motion) return;
+    const desk = context.conditions.desk;
+    const parts = days.map(day => ({ frame: day.querySelector('.week__frame'), swatch: day.querySelector('.week__swatch'), img: day.querySelector('.week__frame img'), text: day.querySelectorAll('.week__title, .week__note') }));
+    let sinks = [];
+    const measure = () => { sinks = parts.map(part => part.frame.offsetHeight - part.frame.offsetWidth * (desk ? .85 : .95)); };
+    measure();
+    const step = (timeline, part, at) => timeline
+      .fromTo(part.frame, { y: () => sinks[parts.indexOf(part)] }, { y: 0, duration: 1, ease: 'power2.inOut' }, at)
+      .fromTo(part.swatch, { y: 0, yPercent: 0 }, { y: 0, yPercent: 101, duration: .8, ease: 'power2.inOut' }, at + .6)
+      .fromTo(part.img, { scale: 1.35 }, { scale: 1, duration: 1.1, ease: 'power2.out' }, at + .55)
+      .fromTo(part.text, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: .5, stagger: .1, ease: 'power2.out' }, at + .9);
+    if (desk) {
+      const timeline = gsap.timeline({ scrollTrigger: { id: 'week', trigger: section, start: 'top top', end: () => '+=' + innerHeight * 1.6, pin: true, scrub: .5, invalidateOnRefresh: true, onRefreshInit: measure } });
+      parts.forEach((part, i) => step(timeline, part, i * .3));
+    } else {
+      parts.forEach((part, i) => step(gsap.timeline({ scrollTrigger: { id: `week:day-${i + 1}`, trigger: days[i], start: 'top 95%', end: 'top 50%', scrub: .5, invalidateOnRefresh: true, onRefreshInit: i ? undefined : measure } }), part, 0));
+    }
+  });
+}, { id: 'scene:week' });
+</script>
+<script data-8b-part="scene:board">
+queueMotion(() => {
+  const section = document.getElementById('board');
+  const grid = section.querySelector('.board__grid');
+  const tiles = [...grid.querySelectorAll('.board__tile')];
+  const tilt = [-9, 7, -4, 11, -13, 5, 9, -6, 3, -11, 8, -3];
+  gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+    let offsets = [];
+    const measure = () => {
+      const w = grid.clientWidth / 2, h = grid.clientHeight / 2;
+      offsets = tiles.map(tile => [w - (tile.offsetLeft + tile.offsetWidth / 2), h - (tile.offsetTop + tile.offsetHeight / 2)]);
+    };
+    measure();
+    const timeline = gsap.timeline({ scrollTrigger: { id: 'board', trigger: section, start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true, scrub: .6, invalidateOnRefresh: true, onRefreshInit: measure } });
+    tiles.slice().reverse().forEach((tile, i) => {
+      const k = tiles.indexOf(tile);
+      timeline.fromTo(tile, { x: () => offsets[k][0], y: () => offsets[k][1], rotation: tilt[k % tilt.length], scale: .52 }, { x: 0, y: 0, rotation: 0, scale: 1, duration: 1, ease: 'power3.inOut' }, i * .3);
+    });
+  });
+}, { id: 'scene:board' });
+</script>
+<script data-8b-part="scene:edit">
+queueMotion(() => {
+  const section = document.getElementById('edit');
+  gsap.matchMedia().add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+    const shots = [...section.querySelectorAll('.edit__shot')];
+    section.setAttribute('data-staged', '');
+    const timeline = gsap.timeline({ scrollTrigger: { id: 'edit', trigger: section.querySelector('.edit__list'), start: 'top 30%', end: 'bottom 70%', scrub: .5, invalidateOnRefresh: true } });
+    shots.slice(1).forEach((shot, i) => {
+      const at = i * 1.5 + .4;
+      timeline
+        .fromTo(shot.querySelector('.edit__slide'), { y: 0, yPercent: 100 }, { y: 0, yPercent: 0, duration: 1, ease: 'power2.inOut' }, at)
+        .fromTo(shot.querySelector('.edit__hold'), { y: 0, yPercent: -100 }, { y: 0, yPercent: 0, duration: 1, ease: 'power2.inOut' }, at)
+        .fromTo(shot.querySelector('.edit__arch'), { scale: 1.12 }, { scale: 1, duration: 1.3, ease: 'power2.out' }, at + .2);
+    });
+    timeline.to({}, { duration: .4 });
+    return () => section.removeAttribute('data-staged');
+  });
+}, { id: 'scene:edit' });
+</script>
+<script data-8b-part="scene:journal">
+queueMotion(() => {
+  const section = document.getElementById('journal');
+  const poster = section.querySelector('.journal__poster');
+  const words = [...section.querySelectorAll('.journal__word')];
+  gsap.matchMedia().add({ desk: '(min-width: 900px)', phone: '(max-width: 899px)', motion: '(prefers-reduced-motion: no-preference)' }, context => {
+    if (!context.conditions.motion) return;
+    const desk = context.conditions.desk;
+    const axis = desk ? 'y' : 'x';
+    const room = word => Math.max(0, ((desk ? poster.clientHeight : poster.clientWidth) - (desk ? word.offsetHeight : word.offsetWidth)) / 2 - 18);
+    const timeline = gsap.timeline({ scrollTrigger: { id: 'journal', trigger: section, start: 'top bottom', end: 'bottom top', scrub: .5, invalidateOnRefresh: true } });
+    timeline
+      .fromTo(words[0], { [axis]: () => room(words[0]) }, { [axis]: 0, ease: 'power1.out', duration: 1 }, 0)
+      .fromTo(words[1], { [axis]: () => -room(words[1]) }, { [axis]: 0, ease: 'power1.out', duration: 1 }, 0)
+      .to(words[0], { [axis]: () => -room(words[0]), ease: 'power1.in', duration: 1 }, 1.5)
+      .to(words[1], { [axis]: () => room(words[1]), ease: 'power1.in', duration: 1 }, 1.5);
+  });
+}, { id: 'scene:journal' });
+</script>
+<script data-8b-part="scene:letter">
+queueMotion(() => {
+  gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+    if (!adjacent('letter', 'membership')) return;
+    const section = document.getElementById('letter');
+    gsap.timeline({ scrollTrigger: { id: 'letter:exit', trigger: section, start: 'bottom bottom', end: 'bottom 25%', scrub: true, invalidateOnRefresh: true } })
+      .fromTo(section.querySelector('.letter__motto'), { x: 0 }, { x: () => innerWidth * (innerWidth < 600 ? .18 : .25), ease: 'none' });
+  });
+}, { id: 'scene:letter' });
+</script>
+<script data-8b-part="scene:membership">
+queueMotion(() => {
+  const section = document.getElementById('membership');
+  const cards = [...section.querySelectorAll('.membership__card')];
+  gsap.matchMedia().add({ desk: '(min-width: 900px)', phone: '(max-width: 899px)', motion: '(prefers-reduced-motion: no-preference)' }, context => {
+    if (!context.conditions.motion) return;
+    if (adjacent('letter', 'membership')) {
+      gsap.timeline({ scrollTrigger: { id: 'membership:entry', trigger: section, start: 'top bottom', end: 'top 25%', scrub: true, invalidateOnRefresh: true } })
+        .fromTo(section.querySelector('.membership__title'), { x: () => -innerWidth * (innerWidth < 600 ? .18 : .25) }, { x: 0, ease: 'none' });
+    }
+    const turn = (timeline, card, at) => {
+      const back = card.querySelector('.membership__back');
+      timeline
+        .set(back, { visibility: 'visible' }, at)
+        .fromTo(card.querySelector('.membership__flip'), { rotationY: -180 }, { rotationY: 0, duration: 1, ease: 'power2.inOut', immediateRender: true }, at)
+        .set(back, { visibility: 'hidden' }, at + 1);
+    };
+    if (context.conditions.desk) {
+      const timeline = gsap.timeline({ scrollTrigger: { id: 'membership:cards', trigger: section.querySelector('.membership__cards'), start: 'top 90%', end: 'top 30%', scrub: .5 } });
+      timeline.set(cards.map(card => card.querySelector('.membership__back')), { visibility: 'visible' }, 0);
+      cards.forEach((card, i) => turn(timeline, card, i * .35));
+    } else {
+      cards.forEach((card, i) => {
+        const timeline = gsap.timeline({ scrollTrigger: { id: `membership:card-${i + 1}`, trigger: card, start: 'top 92%', end: 'top 40%', scrub: .5 } });
+        timeline.set(card.querySelector('.membership__back'), { visibility: 'visible' }, 0);
+        turn(timeline, card, 0);
+      });
+    }
+  });
+}, { id: 'scene:membership' });
+</script>
+<script data-8b-part="scene:contact">
+queueMotion(() => {
+  const section = document.getElementById('contact');
+  const door = section.querySelector('.contact__door');
+  gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+    gsap.timeline({ scrollTrigger: { id: 'contact', trigger: door, start: 'top 80%', end: 'center 45%', scrub: .5 } })
+      .fromTo(door.querySelector('.contact__leaf--l'), { x: 0, xPercent: 0 }, { x: 0, xPercent: -101, ease: 'power2.inOut' }, 0)
+      .fromTo(door.querySelector('.contact__leaf--r'), { x: 0, xPercent: 0 }, { x: 0, xPercent: 101, ease: 'power2.inOut' }, 0)
+      .fromTo(door.querySelector('img'), { scale: 1.22 }, { scale: 1, ease: 'power2.out' }, 0);
+  });
+}, { id: 'scene:contact' });
+</script>
+<script data-8b-part="section-script:nav">
+(() => {
+  const root = document.getElementById('nav');
+  const bar = root.querySelector('.nav__bar');
+  const toggle = root.querySelector('.nav__toggle');
+  const menu = root.querySelector('.menu');
+  const close = menu.querySelector('.menu__close');
+  let lastY = scrollY;
+  addEventListener('scroll', () => {
+    const y = scrollY;
+    if (Math.abs(y - lastY) < 6) return;
+    if (y > lastY && y > 160 && !bar.contains(document.activeElement)) bar.setAttribute('data-hidden', '');
+    else if (y < lastY) bar.removeAttribute('data-hidden');
+    lastY = y;
+  }, { passive: true });
+  bar.addEventListener('focusin', () => bar.removeAttribute('data-hidden'));
+  const open = () => {
+    menu.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    window.lenis?.stop();
+    document.documentElement.style.overflow = 'hidden';
+    close.focus();
+  };
+  const shut = (returnFocus = true) => {
+    menu.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    document.documentElement.style.overflow = '';
+    window.lenis?.start();
+    if (returnFocus) toggle.focus();
+  };
+  toggle.addEventListener('click', open);
+  close.addEventListener('click', () => shut());
+  menu.addEventListener('click', event => { if (event.target.closest('a')) shut(false); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !menu.hidden) shut(); });
+})();
+</script>
+<script data-8b-part="section-script:hero">
+(() => {
+  const hero = document.getElementById('hero');
+  new IntersectionObserver(([entry]) => hero.toggleAttribute('data-paused', !entry.isIntersecting)).observe(hero);
+})();
+</script>
+<script data-8b-part="section-script:password">
+    // Show / hide password
+    document.querySelectorAll('[data-password-toggle]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var input = document.getElementById(btn.getAttribute('aria-controls'));
+            var show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.setAttribute('aria-pressed', show);
+            btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title th:text="${form.new ? 'Add transaction' : 'Edit transaction'}">Transaction</title></head>
+<body>
+<div layout:fragment="content" th:with="t=${form.type.name()}">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Money</span>
+            <h1 th:utext="${form.new} ? 'Add a <b>transaction</b>' : 'Edit <b>transaction</b>'">Add a transaction</h1>
+            <p>Income and expenses count towards your budgets. Transfers just move money between your own accounts.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-form">
+        <form class="card" th:action="@{/transactions/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="card-body">
+                <div class="segmented" data-type-switch role="radiogroup" aria-label="Type">
+                    <th:block th:each="ty : ${types}">
+                        <input type="radio" th:id="|type-${ty}|" name="type" th:value="${ty}" th:checked="${ty == form.type}">
+                        <label th:for="|type-${ty}|" th:text="${ty.label}">Expense</label>
+                    </th:block>
+                </div>
+                <div class="err" th:errors="*{type}"></div>
+            </div>
+            <div class="card-body form-grid" style="padding-top:0">
+                <div class="field full">
+                    <label for="amount">Amount</label>
+                    <div class="money-input big"><span th:text="${@fmt.symbol()}">₹</span>
+                        <input type="number" step="0.01" min="0.01" id="amount" name="amount" th:value="${@fmt.plain(form.amount)}" placeholder="0.00" required autofocus inputmode="decimal"></div>
+                    <div class="err" th:errors="*{amount}"></div>
+                </div>
+                <div class="field full">
+                    <label for="description">Description</label>
+                    <input type="text" th:field="*{description}" placeholder="e.g. Groceries at D-Mart" maxlength="140">
+                    <div class="err" th:errors="*{description}"></div>
+                </div>
+                <div class="field" data-show-for="EXPENSE" th:hidden="${t != 'EXPENSE'}">
+                    <label for="expenseCategory">Category</label>
+                    <select id="expenseCategory" name="categoryId" th:disabled="${t != 'EXPENSE'}">
+                        <option value="">Choose a category</option>
+                        <option th:each="c : ${expenseCategories}" th:value="${c.id}" th:text="${c.name}" th:selected="${c.id == form.categoryId}">Food</option>
+                    </select>
+                    <div class="err" th:errors="*{categoryChosen}"></div>
+                </div>
+                <div class="field" data-show-for="INCOME" th:hidden="${t != 'INCOME'}">
+                    <label for="incomeCategory">Category</label>
+                    <select id="incomeCategory" name="categoryId" th:disabled="${t != 'INCOME'}">
+                        <option value="">Choose a category</option>
+                        <option th:each="c : ${incomeCategories}" th:value="${c.id}" th:text="${c.name}" th:selected="${c.id == form.categoryId}">Salary</option>
+                    </select>
+                    <div class="err" th:errors="*{categoryChosen}"></div>
+                </div>
+                <div class="field">
+                    <label for="accountId"><span data-show-for="INCOME" th:hidden="${t != 'INCOME'}">Into account</span><span data-show-for="EXPENSE" th:hidden="${t != 'EXPENSE'}">Paid from</span><span data-show-for="TRANSFER" th:hidden="${t != 'TRANSFER'}">From account</span></label>
+                    <select th:field="*{accountId}">
+                        <option th:each="a : ${accounts}" th:value="${a.id}" th:text="|${a.name} · ${a.type.label}|">Bank</option>
+                    </select>
+                    <div class="err" th:errors="*{accountId}"></div>
+                </div>
+                <div class="field" data-show-for="TRANSFER" th:hidden="${t != 'TRANSFER'}">
+                    <label for="toAccountId">To account</label>
+                    <select id="toAccountId" name="toAccountId" th:disabled="${t != 'TRANSFER'}">
+                        <option value="">Choose an account</option>
+                        <option th:each="a : ${accounts}" th:value="${a.id}" th:text="|${a.name} · ${a.type.label}|" th:selected="${a.id == form.toAccountId}">Wallet</option>
+                    </select>
+                    <div class="err" th:errors="*{transferTargetValid}"></div>
+                    <div class="hint">Paying a credit-card bill? Transfer from your bank to the card.</div>
+                </div>
+                <div class="field">
+                    <label for="date">Date</label>
+                    <input type="date" th:field="*{date}">
+                    <div class="err" th:errors="*{date}"></div>
+                </div>
+                <div class="field full">
+                    <label for="notes">Notes <span class="muted" style="text-transform:none;letter-spacing:0">(optional)</span></label>
+                    <textarea th:field="*{notes}" maxlength="500" placeholder="Anything worth remembering"></textarea>
+                    <div class="err" th:errors="*{notes}"></div>
+                </div>
+            </div>
+            <div class="card-body form-actions form-foot">
+                <a class="btn" th:href="@{/transactions}">Cancel</a>
+                <button class="btn" type="submit" name="another" value="1" th:if="${form.new}">Save &amp; add another</button>
+                <button class="btn primary" type="submit">Save</button>
+            </div>
+        </form>
+
+        <div>
+            <div class="card">
+                <div class="card-head"><h2>Quick <b>tips</b></h2></div>
+                <ul class="alert-list">
+                    <li class="alert-item"><span class="dot INFO"></span><div class="body"><div class="title">Bills that repeat</div><div class="msg">Set them up once under <a th:href="@{/recurring}">Bills &amp; recurring</a> and post them with one click.</div></div></li>
+                    <li class="alert-item"><span class="dot GOOD"></span><div class="body"><div class="title">Credit cards</div><div class="msg">Card purchases are expenses. Paying the card bill is a transfer, so nothing counts twice.</div></div></li>
+                    <li class="alert-item"><span class="dot WARNING"></span><div class="body"><div class="title">Missing a category?</div><div class="msg">Add or rename them under <a th:href="@{/categories}">Categories</a>.</div></div></li>
+                </ul>
+            </div>
+            <form class="card" th:unless="${form.new}" th:action="@{/transactions/{id}/delete(id=${form.id})}" method="post" data-confirm="Delete this transaction? This cannot be undone.">
+                <div class="card-body">
+                    <h3>Delete</h3>
+                    <p class="muted">Removes it from your balances, budgets and reports.</p>
+                    <button class="btn danger" type="submit">Delete transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

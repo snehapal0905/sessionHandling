@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Budgets</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Planning</span>
+            <h1>Monthly <b>budgets</b></h1>
+            <p>Give each spending category a limit, then watch actual spending against the plan.</p>
+        </div>
+        <div class="actions">
+            <form th:action="@{/budgets/copy}" method="post" class="inline-form"><input type="hidden" name="month" th:value="${@fmt.param(month)}">
+                <button class="btn" type="submit">Copy last month</button></form>
+            <form th:action="@{/budgets/suggest}" method="post" class="inline-form"><input type="hidden" name="month" th:value="${@fmt.param(month)}">
+                <button class="btn" type="submit">Suggest from spending</button></form>
+        </div>
+    </div>
+
+    <div class="kpis">
+        <div class="card kpi"><div class="label">Budgeted</div><div class="value" th:text="${@fmt.whole(b.totalBudget)}">0</div>
+            <div class="sub" th:text="${summary.income.signum() > 0} ? |${@fmt.percent(b.totalBudget, summary.income)}% of this month's income| : 'No income recorded yet'">of income</div></div>
+        <div class="card kpi" th:classappend="${b.percent > 100} ? 'danger'"><div class="label">Spent so far</div><div class="value" th:text="${@fmt.whole(b.budgetedSpent)}">0</div>
+            <div class="sub" th:text="|${b.percent}% of budgets used|">used</div></div>
+        <div class="card kpi" th:classappend="${b.totalBudget.subtract(b.budgetedSpent).signum() < 0} ? 'danger'"><div class="label">Left to spend</div><div class="value" th:text="${@fmt.whole(b.totalBudget.subtract(b.budgetedSpent))}">0</div>
+            <div class="sub" th:text="${b.overCount > 0} ? |${b.overCount} over budget| : 'Across budgeted categories'">left</div></div>
+        <div class="card kpi"><div class="label">Unbudgeted spending</div><div class="value" th:text="${@fmt.whole(b.unbudgetedSpent)}">0</div>
+            <div class="sub">In categories without a limit</div></div>
+    </div>
+
+    <div class="card" th:if="${summary.income.signum() > 0}" style="margin-bottom:20px">
+        <div class="card-body">
+            <div class="split-legend" style="margin:0 0 10px">
+                <span>Income <b th:text="${@fmt.whole(summary.income)}">0</b></span>
+                <span>Planned spending <b th:text="${@fmt.whole(b.totalBudget)}">0</b></span>
+                <span>Left to save <b th:classappend="${summary.income.subtract(b.totalBudget).signum() < 0} ? 'neg'" th:text="${@fmt.whole(summary.income.subtract(b.totalBudget))}">0</b></span>
+            </div>
+            <div class="split" th:with="p=${@fmt.bar(@fmt.percent(b.totalBudget, summary.income))}">
+                <span th:style="|width:${p}%;background:var(--rust)|"></span>
+                <span th:style="|width:${100 - p}%;background:var(--success)|"></span>
+            </div>
+        </div>
+    </div>
+
+    <form class="card" th:action="@{/budgets/save}" method="post" data-budget-planner th:attr="data-currency=${currency}">
+        <input type="hidden" name="month" th:value="${@fmt.param(month)}">
+        <div class="card-head">
+            <div th:replace="~{fragments :: month-nav(${month}, '/budgets')}"></div>
+            <span class="sub">Planned total <b data-budget-total th:text="${@fmt.whole(b.totalBudget)}">0</b></span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Category</th><th class="num">Spent</th><th style="width:170px">Budget</th><th style="min-width:160px">Progress</th><th class="num">Left</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="l : ${b.lines}">
+                    <td><span th:replace="~{fragments :: category(${l.category})}"></span>
+                        <span class="sub" th:text="${l.category.essential} ? 'Need' : 'Want'">Need</span></td>
+                    <td class="num"><a th:href="@{/transactions(month=${@fmt.param(month)},category=${l.category.id})}" style="color:inherit" th:text="${@fmt.whole(l.spent)}">0</a>
+                        <span class="sub" th:if="${isCurrent and l.budgeted and l.projected.compareTo(l.spent) != 0}" th:text="|~${@fmt.whole(l.projected)} by month end|"></span></td>
+                    <td><div class="money-input"><span th:text="${@fmt.symbol()}">₹</span>
+                        <input type="number" min="0" step="100" data-budget th:name="|budget_${l.category.id}|" th:value="${l.budgeted} ? ${@fmt.integer(l.budget)} : ''" placeholder="No limit" th:attr="aria-label=|Budget for ${l.category.name}|"></div></td>
+                    <td><div class="progress" th:if="${l.budgeted}"><span th:classappend="${l.status}" th:style="|width:${l.percent}%|"></span></div>
+                        <span class="sub" th:if="${l.budgeted}" th:text="|${l.percent}% used|"></span></td>
+                    <td class="num" th:classappend="${l.budgeted and l.remaining.signum() < 0} ? 'neg'" th:text="${l.budgeted} ? ${@fmt.whole(l.remaining)} : '-'">0</td>
+                    <td>
+                        <span class="badge danger" th:if="${l.status == 'over'}">Over</span>
+                        <span class="badge warning" th:if="${l.status == 'risk'}">At risk</span>
+                        <span class="badge warning" th:if="${l.status == 'warn'}">80%+</span>
+                        <span class="badge success" th:if="${l.status == 'ok'}">On track</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(b.lines)}"><td colspan="6" class="empty">No expense categories yet. <a th:href="@{/categories/new}">Add one</a>.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-body form-actions form-foot">
+            <span class="muted" style="margin-right:auto;align-self:center">Leave a budget empty for no limit.</span>
+            <button class="btn primary" type="submit">Save budgets</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

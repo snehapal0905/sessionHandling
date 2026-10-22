@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Bills &amp; recurring</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Planning</span>
+            <h1>Bills &amp; <b>recurring</b></h1>
+            <p>Rent, subscriptions, EMIs and salary. Post each one when it happens and the next due date moves on by itself.</p>
+        </div>
+        <div class="actions">
+            <a class="btn" th:href="@{/recurring/new(type='INCOME')}">Add recurring income</a>
+            <a class="btn primary" th:href="@{/recurring/new(type='EXPENSE')}">Add a bill</a>
+        </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-bottom:20px">
+        <div class="card kpi"><div class="label">Bills a month</div><div class="value" th:text="${@fmt.whole(monthlyBills)}">0</div><div class="sub" th:text="|${@fmt.whole(monthlyBills * 12)} a year|">a year</div></div>
+        <div class="card kpi"><div class="label">Regular income a month</div><div class="value" th:text="${@fmt.whole(monthlyIncome)}">0</div><div class="sub">Salary and other repeating income</div></div>
+        <div class="card kpi"><div class="label">Due in 30 days</div><div class="value" th:text="${#lists.size(upcoming)}">0</div><div class="sub">Occurrences not yet posted</div></div>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-head"><h2>Everything that <b>repeats</b></h2></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Name</th><th>Category</th><th>Every</th><th>Next due</th><th class="num">Amount</th><th></th></tr></thead>
+                    <tbody>
+                    <tr th:each="r : ${items}" th:style="${r.active} ? '' : 'opacity:.55'">
+                        <td><a th:href="@{/recurring/{id}/edit(id=${r.id})}" style="color:inherit" th:text="${r.name}"></a>
+                            <span class="sub" th:text="${r.active} ? ${r.account.name} : |Paused · ${r.account.name}|"></span></td>
+                        <td><span th:replace="~{fragments :: category(${r.category})}"></span></td>
+                        <td th:text="${r.frequency.label}"></td>
+                        <td class="nowrap" th:text="${@fmt.date(r.nextDueDate)}"></td>
+                        <td class="num" th:classappend="${r.type.name() == 'INCOME'} ? 'amt-in' : 'amt-out'" th:text="${@fmt.money(r.amount)}"></td>
+                        <td class="right"><div class="btn-row">
+                            <form th:if="${r.active}" th:action="@{/recurring/{id}/post(id=${r.id})}" method="post" class="inline-form">
+                                <button class="btn sm primary" type="submit" th:text="${r.type.name() == 'INCOME'} ? 'Received' : 'Paid'">Paid</button></form>
+                            <form th:action="@{/recurring/{id}/toggle(id=${r.id})}" method="post" class="inline-form">
+                                <button class="btn sm" type="submit" th:text="${r.active} ? 'Pause' : 'Resume'">Pause</button></form>
+                        </div></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(items)}"><td colspan="6" class="empty">Nothing set up yet. Add your rent, phone plan or salary.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-head"><h2>Next <b>30 days</b></h2></div>
+            <ul class="alert-list">
+                <li class="alert-item" th:each="o : ${upcoming}">
+                    <span class="dot" th:classappend="${o.overdue} ? 'CRITICAL' : (${o.item.type.name() == 'INCOME'} ? 'GOOD' : 'INFO')"></span>
+                    <div class="body">
+                        <div class="type" th:text="|${@fmt.due(o.daysAway)} · ${@fmt.shortDate(o.date)}|">In 3 days</div>
+                        <div class="title" th:text="${o.item.name}">Rent</div>
+                        <div class="msg" th:text="${o.item.type.name() == 'INCOME' ? '+' : ''} + ${@fmt.whole(o.item.amount)}">0</div>
+                    </div>
+                    <form th:if="${o.date == o.item.nextDueDate}" th:action="@{/recurring/{id}/skip(id=${o.item.id})}" method="post" data-confirm="Skip this one? Nothing will be recorded.">
+                        <button class="btn sm link" type="submit">Skip</button>
+                    </form>
+                </li>
+                <li class="empty" th:if="${#lists.isEmpty(upcoming)}">Nothing due in the next 30 days.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

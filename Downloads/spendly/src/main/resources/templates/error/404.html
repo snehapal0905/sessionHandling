@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Not found - Spendly</title><link rel="icon" th:replace="~{fragments :: favicon}"><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body>
+<div class="error-page">
+    <div class="code">404</div>
+    <h1>Page not found</h1>
+    <p class="muted">The page or record you are looking for does not exist, or it belongs to another account.</p>
+    <a class="btn primary" th:href="@{/dashboard}">Back to dashboard</a>
+</div>
+</body>
+</html>

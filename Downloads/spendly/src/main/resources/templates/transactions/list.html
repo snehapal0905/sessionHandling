@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Transactions</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Money</span>
+            <h1>Trans<b>actions</b></h1>
+            <p>Everything that came in, went out or moved between your accounts.</p>
+        </div>
+        <div class="actions">
+            <a class="btn" th:href="@{/transactions/export(month=${@fmt.param(month)},type=${type},account=${account},category=${category},q=${q})}">
+                <svg th:replace="~{fragments :: icon('download')}"></svg>Export CSV</a>
+            <a class="btn" th:href="@{/transactions/new(type='TRANSFER')}">Transfer</a>
+            <a class="btn" th:href="@{/transactions/new(type='INCOME')}">Add income</a>
+            <a class="btn primary" th:href="@{/transactions/new(type='EXPENSE')}">Add expense</a>
+        </div>
+    </div>
+
+    <form class="filters" th:action="@{/transactions}" method="get" data-autosubmit>
+        <div class="field"><label for="month">Month</label><input type="month" id="month" name="month" th:value="${@fmt.param(month)}"></div>
+        <div class="field"><label for="type">Type</label>
+            <select id="type" name="type">
+                <option value="">All types</option>
+                <option th:each="t : ${types}" th:value="${t}" th:text="${t.label}" th:selected="${t == type}">Type</option>
+            </select></div>
+        <div class="field"><label for="account">Account</label>
+            <select id="account" name="account">
+                <option value="">All accounts</option>
+                <option th:each="a : ${accounts}" th:value="${a.id}" th:text="${a.name}" th:selected="${a.id == account}">Account</option>
+            </select></div>
+        <div class="field"><label for="category">Category</label>
+            <select id="category" name="category">
+                <option value="">All categories</option>
+                <option th:each="c : ${categories}" th:value="${c.id}" th:text="|${c.name} (${c.kind.label})|" th:selected="${c.id == category}">Category</option>
+            </select></div>
+        <div class="field"><label for="q">Search</label><input type="search" id="q" name="q" th:value="${q}" placeholder="Description or notes"></div>
+        <button class="btn" type="submit">Filter</button>
+        <a class="btn link" th:href="@{/transactions(month=${@fmt.param(month)})}" th:if="${type != null or account != null or category != null or (q != null and !#strings.isEmpty(q))}">Clear</a>
+    </form>
+
+    <div class="grid grid-3" style="margin-bottom:20px">
+        <div class="card kpi"><div class="label">Income</div><div class="value" th:text="${@fmt.whole(totalIncome)}">0</div><div class="sub" th:text="${@fmt.month(month)}">month</div></div>
+        <div class="card kpi"><div class="label">Expenses</div><div class="value" th:text="${@fmt.whole(totalExpense)}">0</div><div class="sub" th:text="${@fmt.month(month)}">month</div></div>
+        <div class="card kpi"><div class="label">Net</div><div class="value" th:text="${@fmt.signed(totalIncome.subtract(totalExpense))}">0</div><div class="sub">Income minus expenses, transfers excluded</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <div th:replace="~{fragments :: month-nav(${month}, '/transactions')}"></div>
+            <span class="sub" th:text="|${page.totalElements} transactions|">0 transactions</span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Account</th><th class="num">Amount</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="t : ${page.content}">
+                    <td class="nowrap muted" th:text="${@fmt.day(t.date)}"></td>
+                    <td><a th:href="@{/transactions/{id}/edit(id=${t.id})}" style="color:inherit" th:text="${t.description}"></a>
+                        <span class="sub" th:if="${t.notes}" th:text="${t.notes}"></span>
+                        <span class="sub" th:if="${t.recurringItemId != null}">Recurring</span></td>
+                    <td><span th:replace="~{fragments :: category(${t.category})}"></span><span class="badge muted" th:if="${t.category == null}">Transfer</span></td>
+                    <td class="nowrap" th:text="${t.type.name() == 'TRANSFER'} ? |${t.account.name} → ${t.toAccount.name}| : ${t.account.name}"></td>
+                    <td class="num"><span th:replace="~{fragments :: amount(${t})}"></span></td>
+                    <td class="right nowrap">
+                        <div class="btn-row">
+                            <a class="btn sm" th:href="@{/transactions/{id}/edit(id=${t.id})}">Edit</a>
+                            <form th:action="@{/transactions/{id}/delete(id=${t.id})}" method="post" class="inline-form" data-confirm="Delete this transaction?">
+                                <button class="btn sm danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${page.empty}"><td colspan="6" class="empty">No transactions match. <a th:href="@{/transactions/new}">Add one</a>.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:replace="~{fragments :: pagination(${page})}"></div>
+    </div>
+</div>
+</body>
+</html>

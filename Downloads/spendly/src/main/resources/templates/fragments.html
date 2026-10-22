@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<link th:fragment="favicon" rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2064%2064'%3E%3Crect%20width%3D'64'%20height%3D'64'%20rx%3D'14'%20fill%3D'%23b5562a'%2F%3E%3Ctext%20x%3D'32'%20y%3D'45'%20font-family%3D'Arial%2CHelvetica%2Csans-serif'%20font-size%3D'38'%20font-weight%3D'700'%20text-anchor%3D'middle'%20fill%3D'%23fcf8f3'%3Es%3C%2Ftext%3E%3C%2Fsvg%3E">
+
+<svg th:fragment="icon(name)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" th:switch="${name}">
+    <th:block th:case="'home'"><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-6h6v6"/></th:block>
+    <th:block th:case="'heart'"><path d="M12 20s-7.5-4.6-9.2-9.4C1.6 7.2 3.8 4 7.1 4c2 0 3.6 1.2 4.9 3 1.3-1.8 2.9-3 4.9-3 3.3 0 5.5 3.2 4.3 6.6C19.5 15.4 12 20 12 20z"/><path d="M3 12h4l2-3 3 6 2-3h7"/></th:block>
+    <th:block th:case="'list'"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></th:block>
+    <th:block th:case="'wallet'"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18v3"/><path d="M3 7.5V18a2 2 0 0 0 2 2h15V8H5.5A2.5 2.5 0 0 1 3 5.5"/><circle cx="16.5" cy="14" r="1.2"/></th:block>
+    <th:block th:case="'pie'"><path d="M12 3v9h9"/><path d="M20.5 15.5A9 9 0 1 1 8.5 3.7"/></th:block>
+    <th:block th:case="'repeat'"><path d="M4 12V9a3 3 0 0 1 3-3h12l-3-3M20 12v3a3 3 0 0 1-3 3H5l3 3"/></th:block>
+    <th:block th:case="'target'"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></th:block>
+    <th:block th:case="'spark'"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></th:block>
+    <th:block th:case="'chart'"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></th:block>
+    <th:block th:case="'tag'"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></th:block>
+    <th:block th:case="'user'"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></th:block>
+    <th:block th:case="'plus'"><path d="M12 5v14M5 12h14"/></th:block>
+    <th:block th:case="'download'"><path d="M12 4v12M6 10l6 6 6-6M4 20h16"/></th:block>
+    <th:block th:case="'menu'"><path d="M3 6h18M3 12h18M3 18h18"/></th:block>
+</svg>
+
+<span th:fragment="category(c)" class="cat" th:if="${c != null}"><span class="swatch" th:style="|--c:${c.color}|"></span><span th:text="${c.name}">Category</span></span>
+
+<!-- amount coloured by direction: +income, -expense, transfer neutral -->
+<span th:fragment="amount(t)" class="nowrap"
+      th:classappend="${t.type.name() == 'INCOME'} ? 'amt-in' : (${t.type.name() == 'EXPENSE'} ? 'amt-out' : 'amt-move')"
+      th:text="${t.type.name() == 'INCOME' ? '+' + @fmt.money(t.amount) : (t.type.name() == 'EXPENSE' ? '-' + @fmt.money(t.amount) : @fmt.money(t.amount))}">0</span>
+
+<div th:fragment="pagination(page)" class="pagination" th:if="${page.totalElements > 0}">
+    <span th:text="|Showing ${page.number * page.size + 1}-${page.number * page.size + page.numberOfElements} of ${page.totalElements}|">Showing</span>
+    <div class="pages" th:if="${page.totalPages > 1}">
+        <a class="btn sm" th:if="${page.hasPrevious()}" th:href="|${currentPath}?${pageQuery}page=${page.number - 1}|">Previous</a>
+        <span class="btn sm" th:text="|Page ${page.number + 1} of ${page.totalPages}|">Page</span>
+        <a class="btn sm" th:if="${page.hasNext()}" th:href="|${currentPath}?${pageQuery}page=${page.number + 1}|">Next</a>
+    </div>
+</div>
+
+<!-- previous / next month links that keep the other query parameters -->
+<div th:fragment="month-nav(month, base)" class="month-nav">
+    <a class="btn sm" th:href="@{${base}(month=${@fmt.param(month.minusMonths(1))})}" aria-label="Previous month">&larr;</a>
+    <span class="current" th:text="${@fmt.month(month)}">October 2026</span>
+    <a class="btn sm" th:href="@{${base}(month=${@fmt.param(month.plusMonths(1))})}" aria-label="Next month">&rarr;</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Dashboard</title></head>
+<body>
+<div layout:fragment="content" th:with="f=${d.forecast}">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Personal finance overview</span>
+            <h1><span th:text="|${d.greeting},|">Good evening,</span> <b th:text="${currentUser.firstName}">Karan</b></h1>
+            <p th:text="|Your money at a glance · ${@fmt.month(d.month)}|">Your money at a glance</p>
+        </div>
+        <div class="actions">
+            <a class="btn" th:href="@{/transactions/new(type='INCOME')}">Add income</a>
+            <a class="btn primary" th:href="@{/transactions/new(type='EXPENSE')}">Add expense</a>
+        </div>
+    </div>
+
+    <div class="card empty-state" th:if="${d.empty}" style="margin-bottom:20px">
+        <div class="arches" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <h2>Let's set up your <b>money plan</b></h2>
+        <p>Spendly has made you a bank account, a cash wallet and a set of categories. Add your other accounts, record this month's income and spending, then set budgets.</p>
+        <div class="actions">
+            <a class="btn" th:href="@{/accounts}">Review accounts</a>
+            <a class="btn" th:href="@{/budgets}">Plan budgets</a>
+            <a class="btn primary" th:href="@{/transactions/new(type='INCOME')}">Record income</a>
+        </div>
+    </div>
+
+    <!-- 1. How much money do I have? -->
+    <div class="kpis">
+        <a class="card kpi" th:href="@{/accounts}">
+            <div class="label">Total balance</div>
+            <div class="value" th:text="${@fmt.whole(d.balances.total)}">0</div>
+            <div class="sub" th:text="|Across ${#lists.size(d.balances.accounts.?[account.active])} accounts|">Across all accounts</div>
+        </a>
+        <a class="card kpi" th:href="@{/transactions(type='INCOME')}">
+            <div class="label">Income this month</div>
+            <div class="value" th:text="${@fmt.whole(d.thisMonth.income)}">0</div>
+            <div class="sub" th:text="${d.lastMonth.income.signum() == 0} ? 'Nothing last month to compare' : |${@fmt.percentChange(d.incomeChange)} vs last month|">vs last month</div>
+        </a>
+        <a class="card kpi" th:classappend="${d.thisMonth.income.signum() > 0 and d.expenseShare > 100} ? 'danger'" th:href="@{/transactions(type='EXPENSE')}">
+            <div class="label">Expenses this month</div>
+            <div class="value" th:text="${@fmt.whole(d.thisMonth.expense)}">0</div>
+            <div class="sub" th:text="${d.thisMonth.income.signum() == 0} ? |${@fmt.percentChange(d.expenseChange)} vs last month| : |${d.expenseShare}% of income|">of income</div>
+        </a>
+        <a class="card kpi" th:classappend="${d.thisMonth.net.signum() < 0} ? 'danger'" th:href="@{/reports}">
+            <div class="label">Net savings</div>
+            <div class="value" th:text="${@fmt.whole(d.thisMonth.net)}">0</div>
+            <div class="sub" th:text="|${d.thisMonth.savingsRate}% savings rate|">savings rate</div>
+        </a>
+    </div>
+
+    <!-- 2. Where did my money go? / 4. How much can I safely spend? -->
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-head"><h2>Income vs <b>expenses</b></h2><a th:href="@{/reports}">Reports</a></div>
+            <div class="card-body"><div class="chart-box"><canvas id="trendChart" aria-label="Income and expenses over the last six months" role="img"></canvas></div></div>
+        </div>
+        <div class="card">
+            <div class="card-head"><h2>Safe to <b>spend</b></h2><a th:href="@{/insights}">Forecast</a></div>
+            <div class="card-body forecast">
+                <div>
+                    <div class="big"><span th:text="${@fmt.whole(f.safePerDay)}">0</span><small>a day</small></div>
+                    <p class="muted" style="margin:8px 0 0" th:text="|${@fmt.whole(f.safeToSpend)} left for the next ${f.daysLeft + 1} days, after bills still due and keeping ${currentUser.savingsTargetPercent}% aside.|">left</p>
+                </div>
+                <div>
+                    <div class="split-legend" style="margin:0 0 6px"><span>Month</span><span th:text="|Day ${f.daysElapsed} of ${f.daysInMonth}|">Day</span></div>
+                    <div class="progress"><span th:style="|width:${f.monthProgress}%|"></span></div>
+                </div>
+                <dl class="lines-list">
+                    <div><dt>Bills still due</dt><dd th:text="${@fmt.whole(f.pendingBills)}">0</dd></div>
+                    <div><dt>Income still to come</dt><dd th:text="${@fmt.whole(f.pendingIncome)}">0</dd></div>
+                    <div><dt>Projected savings</dt><dd th:classappend="${f.projectedNet.signum() < 0} ? 'neg' : 'pos'" th:text="|${@fmt.whole(f.projectedNet)} (${f.projectedSavingsRate}%)|">0</dd></div>
+                    <div class="total"><dt>Month-end balance</dt><dd th:text="${@fmt.whole(f.monthEndBalance)}">0</dd></div>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Am I staying within budget? -->
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-head">
+                <h2>Budget <b>utilization</b></h2>
+                <a th:href="@{/budgets}" th:text="${#lists.isEmpty(d.budgets.budgeted)} ? 'Plan budgets' : 'All budgets'">All budgets</a>
+            </div>
+            <div class="card-body" style="padding-bottom:6px" th:unless="${#lists.isEmpty(d.budgets.budgeted)}">
+                <div class="split-legend" style="margin:0 0 8px">
+                    <span><b th:text="${@fmt.whole(d.budgets.budgetedSpent)}">0</b> of <span th:text="${@fmt.whole(d.budgets.totalBudget)}">0</span> budgeted</span>
+                    <span th:text="|${d.budgets.percent}% used|">0%</span>
+                </div>
+                <div class="progress thick"><span th:classappend="${d.budgets.percent > 100} ? 'over' : (${d.budgets.percent >= 80} ? 'warn')" th:style="|width:${d.budgets.percent}%|"></span></div>
+            </div>
+            <ul class="budget-list">
+                <li th:each="l, s : ${d.budgets.budgeted}" th:if="${s.index < 6}">
+                    <div class="row">
+                        <span th:replace="~{fragments :: category(${l.category})}"></span>
+                        <span class="figures"><b th:text="${@fmt.whole(l.spent)}">0</b> / <span th:text="${@fmt.whole(l.budget)}">0</span>
+                            <span class="badge danger" th:if="${l.status == 'over'}" style="margin-left:6px">Over</span>
+                            <span class="badge warning" th:if="${l.status == 'risk'}" style="margin-left:6px">At risk</span></span>
+                    </div>
+                    <div class="progress"><span th:classappend="${l.status}" th:style="|width:${l.percent}%|"></span></div>
+                </li>
+                <li class="empty" th:if="${#lists.isEmpty(d.budgets.budgeted)}">No budgets for this month yet.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-head"><h2>Where it <b>went</b></h2><span class="sub" th:text="${@fmt.month(d.month)}">month</span></div>
+            <div class="card-body" th:unless="${#lists.isEmpty(d.spending)}">
+                <div class="chart-box short"><canvas id="spendChart" aria-label="Spending by category this month" role="img"></canvas></div>
+                <ul class="legend mt">
+                    <li th:each="c, s : ${d.spending}" th:if="${s.index < 6}">
+                        <span class="swatch" th:style="|--c:${c.color}|"></span>
+                        <a class="name" th:href="@{/transactions(category=${c.id})}" style="color:inherit;font-weight:400" th:text="${c.name}">Food</a>
+                        <span class="figure" th:text="${@fmt.whole(c.amount)}">0</span>
+                        <span class="share" th:text="|${c.share}%|">0%</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="empty" th:if="${#lists.isEmpty(d.spending)}">No spending recorded this month.</div>
+        </div>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-head"><h2>Recent <b>transactions</b></h2><a th:href="@{/transactions}">View all</a></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Date</th><th>Description</th><th class="hide-sm">Category</th><th class="num">Amount</th></tr></thead>
+                    <tbody>
+                    <tr th:each="t : ${d.recent}">
+                        <td class="nowrap muted" th:text="${@fmt.shortDate(t.date)}"></td>
+                        <td><a th:href="@{/transactions/{id}/edit(id=${t.id})}" style="color:inherit" th:text="${t.description}"></a>
+                            <span class="sub" th:text="${t.type.name() == 'TRANSFER'} ? |${t.account.name} → ${t.toAccount.name}| : ${t.account.name}"></span></td>
+                        <td class="hide-sm"><span th:replace="~{fragments :: category(${t.category})}"></span><span class="badge muted" th:if="${t.category == null}">Transfer</span></td>
+                        <td class="num"><span th:replace="~{fragments :: amount(${t})}"></span></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(d.recent)}"><td colspan="4" class="empty">No transactions yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <div class="card">
+                <div class="card-head"><h2>Coming <b>up</b></h2><a th:href="@{/recurring}">Bills</a></div>
+                <ul class="alert-list">
+                    <li class="alert-item" th:each="o : ${d.upcoming}">
+                        <span class="dot" th:classappend="${o.overdue} ? 'CRITICAL' : (${o.item.type.name() == 'INCOME'} ? 'GOOD' : 'INFO')"></span>
+                        <div class="body">
+                            <div class="type" th:text="|${@fmt.due(o.daysAway)} · ${@fmt.shortDate(o.date)}|">In 3 days</div>
+                            <div class="title" th:text="${o.item.name}">Rent</div>
+                            <div class="msg" th:classappend="${o.item.type.name() == 'INCOME'} ? 'amt-in'"
+                                 th:text="${o.item.type.name() == 'INCOME' ? '+' : ''} + ${@fmt.whole(o.item.amount)}">0</div>
+                        </div>
+                        <form th:if="${o.date == o.item.nextDueDate}" th:action="@{/recurring/{id}/post(id=${o.item.id})}" method="post">
+                            <button class="btn sm" type="submit" th:text="${o.item.type.name() == 'INCOME'} ? 'Received' : 'Paid'">Paid</button>
+                        </form>
+                    </li>
+                    <li class="empty" th:if="${#lists.isEmpty(d.upcoming)}">Nothing due in the next two weeks.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-head"><h2>Insights</h2><a th:href="@{/insights}">All insights</a></div>
+                <ul class="alert-list">
+                    <li class="alert-item" th:each="i : ${d.insights}">
+                        <span class="dot" th:classappend="${i.severity}"></span>
+                        <div class="body">
+                            <div class="type" th:text="${i.type}">Budget</div>
+                            <div class="title" th:text="${i.title}">Title</div>
+                            <div class="msg" th:text="${i.message}">Message</div>
+                        </div>
+                    </li>
+                    <li class="empty" th:if="${#lists.isEmpty(d.insights)}">All calm - nothing needs attention.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" th:unless="${#lists.isEmpty(d.goals)}">
+        <div class="card-head"><h2>Savings <b>goals</b></h2><a th:href="@{/goals}">All goals</a></div>
+        <div class="grid grid-3" style="gap:0">
+            <div class="goal-mini" th:each="g : ${d.goals}">
+                <div class="row"><span class="cat"><span class="swatch" th:style="|--c:${g.color}|"></span><strong th:text="${g.name}">Goal</strong></span><span th:text="|${g.percent}%|">0%</span></div>
+                <div class="progress"><span th:style="|width:${g.percent}%;background:${g.color}|"></span></div>
+                <div class="row muted"><span th:text="|${@fmt.whole(g.savedAmount)} saved|">saved</span><span th:text="|of ${@fmt.whole(g.targetAmount)}|">of</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script th:inline="javascript">
+        (function () {
+            if (!window.Chart) return;
+            Chart.defaults.font.family = 'Onest, Arial, sans-serif';
+            Chart.defaults.color = '#8a5a3c';
+            const symbol = /*[[${@fmt.symbol()}]]*/ '₹';
+            const money = v => symbol + Math.round(v).toLocaleString(symbol === '₹' ? 'en-IN' : 'en-US');
+            const labels = /*[[${d.trend.![label]}]]*/ [];
+            const income = /*[[${d.trend.![income]}]]*/ [];
+            const expense = /*[[${d.trend.![expense]}]]*/ [];
+            new Chart(document.getElementById('trendChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {label: 'Income', data: income, backgroundColor: '#b5562a', borderRadius: {topLeft: 99, topRight: 99}, maxBarThickness: 34},
+                        {label: 'Expenses', data: expense, backgroundColor: '#bad4ed', borderRadius: {topLeft: 99, topRight: 99}, maxBarThickness: 34}
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {legend: {position: 'bottom'}, tooltip: {callbacks: {label: c => c.dataset.label + ': ' + money(c.parsed.y)}}},
+                    scales: {x: {grid: {display: false}}, y: {beginAtZero: true, grid: {color: '#f9e7d8'}, ticks: {callback: v => money(v)}}}
+                }
+            });
+            const spend = document.getElementById('spendChart');
+            if (spend) {
+                new Chart(spend, {
+                    type: 'doughnut',
+                    data: {
+                        labels: /*[[${d.spending.![name]}]]*/ [],
+                        datasets: [{data: /*[[${d.spending.![amount]}]]*/ [], backgroundColor: /*[[${d.spending.![color]}]]*/ [], borderWidth: 2, borderColor: '#fffdfa'}]
+                    },
+                    options: {maintainAspectRatio: false, cutout: '64%', plugins: {legend: {display: false}, tooltip: {callbacks: {label: c => c.label + ': ' + money(c.parsed)}}}}
+                });
+            }
+        })();
+    </script>
+</th:block>
+</body>
+</html>

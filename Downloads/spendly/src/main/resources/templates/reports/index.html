@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Reports</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Intelligence</span>
+            <h1>Income vs <b>expenses</b></h1>
+            <p>Spending patterns and financial trends, month by month.</p>
+        </div>
+        <div class="chips" style="margin:0">
+            <a class="chip" th:classappend="${range == 6} ? 'active'" th:href="@{/reports(range=6,month=${@fmt.param(month)})}">6 months</a>
+            <a class="chip" th:classappend="${range == 12} ? 'active'" th:href="@{/reports(range=12,month=${@fmt.param(month)})}">12 months</a>
+        </div>
+    </div>
+
+    <div class="kpis">
+        <div class="card kpi"><div class="label" th:text="|Income · ${range} months|">Income</div><div class="value" th:text="${@fmt.whole(rangeIncome)}">0</div>
+            <div class="sub" th:text="|${@fmt.whole(rangeIncome / range)} a month on average|">avg</div></div>
+        <div class="card kpi"><div class="label" th:text="|Expenses · ${range} months|">Expenses</div><div class="value" th:text="${@fmt.whole(rangeExpense)}">0</div>
+            <div class="sub" th:text="|${@fmt.whole(rangeExpense / range)} a month on average|">avg</div></div>
+        <div class="card kpi" th:classappend="${rangeNet.signum() < 0} ? 'danger'"><div class="label">Net saved</div><div class="value" th:text="${@fmt.whole(rangeNet)}">0</div>
+            <div class="sub">Income minus expenses</div></div>
+        <div class="card kpi"><div class="label">Savings rate</div><div class="value" th:text="|${rangeRate}%|">0%</div>
+            <div class="sub" th:text="|Target ${currentUser.savingsTargetPercent}%|">target</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-head"><h2>Month by <b>month</b></h2><span class="sub">Bars: income and expenses · line: net savings</span></div>
+        <div class="card-body"><div class="chart-box tall"><canvas id="trendChart" role="img" aria-label="Income, expenses and net savings by month"></canvas></div></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Month</th><th class="num">Income</th><th class="num">Expenses</th><th class="num">Net</th><th class="num">Savings rate</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="m : ${trend}">
+                    <td th:text="${@fmt.month(m.month)}"></td>
+                    <td class="num" th:text="${@fmt.whole(m.income)}"></td>
+                    <td class="num" th:text="${@fmt.whole(m.expense)}"></td>
+                    <td class="num" th:classappend="${m.net.signum() < 0} ? 'neg' : 'pos'" th:text="${@fmt.signed(m.net)}"></td>
+                    <td class="num" th:text="${m.income.signum() > 0} ? |${m.savingsRate}%| : '-'"></td>
+                    <td class="right"><a class="btn sm" th:href="@{/reports(range=${range},month=${@fmt.param(m.month)})}">Break down</a></td>
+                </tr>
+                </tbody>
+                <tfoot><tr><td>Total</td><td class="num" th:text="${@fmt.whole(rangeIncome)}"></td><td class="num" th:text="${@fmt.whole(rangeExpense)}"></td>
+                    <td class="num" th:text="${@fmt.signed(rangeNet)}"></td><td class="num" th:text="|${rangeRate}%|"></td><td></td></tr></tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="page-head" style="margin:36px 0 20px">
+        <div><h2 style="font-size:1.8rem">Breakdown for <b th:text="${@fmt.month(month)}">October 2026</b></h2></div>
+        <div th:replace="~{fragments :: month-nav(${month}, '/reports')}"></div>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-head"><h2>Spending by <b>category</b></h2><span class="sub">vs the month before</span></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Category</th><th class="num">Spent</th><th style="min-width:120px">Share</th><th class="num">Last month</th><th class="num">Change</th></tr></thead>
+                    <tbody>
+                    <tr th:each="row : ${spending}" th:with="c=${row.c}">
+                        <td><a class="cat" th:href="@{/transactions(month=${@fmt.param(month)},category=${c.id})}" style="color:inherit;font-weight:400"><span class="swatch" th:style="|--c:${c.color}|"></span><span th:text="${c.name}"></span></a></td>
+                        <td class="num" th:text="${@fmt.whole(c.amount)}"></td>
+                        <td><div class="progress"><span th:style="|width:${c.share}%;background:${c.color}|"></span></div><span class="sub" th:text="|${c.share}%|"></span></td>
+                        <td class="num muted" th:text="${row.prev != null} ? ${@fmt.whole(row.prev)} : '-'"></td>
+                        <td class="num" th:classappend="${row.diff != null and row.diff.signum() > 0} ? 'neg' : 'pos'"
+                            th:text="${row.diff != null} ? ${@fmt.signed(row.diff)} : 'New'"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(spending)}"><td colspan="5" class="empty">No spending this month.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <div class="card">
+                <div class="card-head"><h2>Needs vs <b>wants</b></h2></div>
+                <div class="card-body">
+                    <div class="split">
+                        <span th:style="|width:${needsShare}%;background:var(--umber)|"></span>
+                        <span th:style="|width:${100 - needsShare}%;background:var(--peach)|"></span>
+                    </div>
+                    <div class="split-legend">
+                        <span><span class="swatch" style="--c:var(--umber)"></span> Needs <b th:text="${@fmt.whole(needs)}">0</b> (<span th:text="|${needsShare}%|">0%</span>)</span>
+                        <span><span class="swatch" style="--c:var(--peach)"></span> Wants <b th:text="${@fmt.whole(wants)}">0</b> (<span th:text="|${100 - needsShare}%|">0%</span>)</span>
+                    </div>
+                    <p class="muted" style="margin:14px 0 0;font-size:13px">The 50/30/20 rule suggests about 50% of income on needs, 30% on wants and 20% saved.
+                        <a th:href="@{/categories}">Mark categories</a> as needs or wants.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head"><h2>Income <b>sources</b></h2></div>
+                <div class="card-body">
+                    <ul class="legend">
+                        <li th:each="c : ${incomeSources}"><span class="swatch" th:style="|--c:${c.color}|"></span><span class="name" th:text="${c.name}"></span>
+                            <span class="figure" th:text="${@fmt.whole(c.amount)}"></span><span class="share" th:text="|${c.share}%|"></span></li>
+                        <li class="muted" th:if="${#lists.isEmpty(incomeSources)}">No income recorded this month.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head"><h2>Biggest <b>expenses</b></h2></div>
+                <ul class="activity">
+                    <li th:each="t : ${topExpenses}">
+                        <span class="swatch" th:style="|--c:${t.category != null ? t.category.color : '#b8a99a'}|"></span>
+                        <div class="grow"><div><a th:href="@{/transactions/{id}/edit(id=${t.id})}" style="color:inherit;font-weight:400" th:text="${t.description}"></a></div>
+                            <div class="when" th:text="|${@fmt.shortDate(t.date)} · ${t.category != null ? t.category.name : ''}|"></div></div>
+                        <strong class="nowrap" th:text="${@fmt.whole(t.amount)}"></strong>
+                    </li>
+                    <li class="empty" th:if="${#lists.isEmpty(topExpenses)}">Nothing yet.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script th:inline="javascript">
+        (function () {
+            if (!window.Chart) return;
+            Chart.defaults.font.family = 'Onest, Arial, sans-serif';
+            Chart.defaults.color = '#8a5a3c';
+            const symbol = /*[[${@fmt.symbol()}]]*/ '₹';
+            const money = v => symbol + Math.round(v).toLocaleString(symbol === '₹' ? 'en-IN' : 'en-US');
+            new Chart(document.getElementById('trendChart'), {
+                data: {
+                    labels: /*[[${trend.![label]}]]*/ [],
+                    datasets: [
+                        {type: 'line', label: 'Net savings', data: /*[[${trend.![net]}]]*/ [], borderColor: '#5a2810', backgroundColor: '#5a2810', tension: .3, pointRadius: 3, borderWidth: 2, order: 0},
+                        {type: 'bar', label: 'Income', data: /*[[${trend.![income]}]]*/ [], backgroundColor: '#b5562a', borderRadius: {topLeft: 99, topRight: 99}, maxBarThickness: 30, order: 1},
+                        {type: 'bar', label: 'Expenses', data: /*[[${trend.![expense]}]]*/ [], backgroundColor: '#bad4ed', borderRadius: {topLeft: 99, topRight: 99}, maxBarThickness: 30, order: 1}
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
+                    plugins: {legend: {position: 'bottom'}, tooltip: {callbacks: {label: c => c.dataset.label + ': ' + money(c.parsed.y)}}},
+                    scales: {x: {grid: {display: false}}, y: {grid: {color: '#f9e7d8'}, ticks: {callback: v => money(v)}}}
+                }
+            });
+        })();
+    </script>
+</th:block>
+</body>
+</html>

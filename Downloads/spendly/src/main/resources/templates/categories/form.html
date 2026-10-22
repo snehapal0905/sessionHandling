@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title th:text="${form.new ? 'New category' : 'Edit category'}">Category</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Organise</span>
+            <h1 th:utext="${form.new} ? 'New <b>category</b>' : 'Edit <b>category</b>'">New category</h1>
+        </div>
+    </div>
+    <div class="grid grid-form">
+        <form class="card" th:action="@{/categories/save}" th:object="${form}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="card-body form-grid">
+                <div class="field full"><label for="name">Name</label><input type="text" th:field="*{name}" maxlength="60" placeholder="e.g. Pets"><div class="err" th:errors="*{name}"></div></div>
+                <div class="field"><label for="kind">Kind</label>
+                    <select th:field="*{kind}"><option th:each="k : ${kinds}" th:value="${k}" th:text="${k.label}">Expense</option></select></div>
+                <div class="field"><label for="color">Colour</label>
+                    <div class="actions"><input type="color" th:field="*{color}" data-color-label="#colorValue"><span id="colorValue" class="mono"></span></div>
+                    <div class="err" th:errors="*{color}"></div></div>
+                <div class="field"><label class="check"><input type="checkbox" th:field="*{essential}"> A need, not a want (expenses only)</label>
+                    <div class="hint">Rent, groceries and bills are needs; dining out and shopping are wants.</div></div>
+                <div class="field"><label class="check"><input type="checkbox" th:field="*{active}"> Active (shown in forms)</label></div>
+            </div>
+            <div class="card-body form-actions form-foot">
+                <a class="btn" th:href="@{/categories}">Cancel</a>
+                <button class="btn primary" type="submit">Save category</button>
+            </div>
+        </form>
+        <div>
+            <form class="card" th:unless="${form.new}" th:action="@{/categories/{id}/delete(id=${form.id})}" method="post" data-confirm="Delete this category? If it has transactions it will be archived instead.">
+                <div class="card-body">
+                    <h3>Delete</h3>
+                    <p class="muted">Categories that already have transactions are archived instead, so your history keeps its labels.</p>
+                    <button class="btn danger" type="submit">Delete category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

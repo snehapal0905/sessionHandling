@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Health score</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <span class="eyebrow">Overview</span>
+            <h1>Financial <b>health score</b></h1>
+            <p>One number for the whole picture, built from five habits. Based on your last three months.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-main" style="grid-template-columns:minmax(0,1fr) minmax(0,2fr)">
+        <div class="card">
+            <div class="card-head"><h2>Your <b>score</b></h2></div>
+            <div class="card-body">
+                <!-- arch gauge: a half circle of length ~251 -->
+                <div class="score" th:with="len=251.3">
+                    <svg viewBox="0 0 200 110" aria-hidden="true">
+                        <path class="track" d="M20 100 A80 80 0 0 1 180 100"/>
+                        <path class="fill" d="M20 100 A80 80 0 0 1 180 100" th:attr="stroke-dasharray=${len},stroke-dashoffset=${len - len * h.score / 100}"/>
+                    </svg>
+                    <div class="num"><span th:text="${h.score}">0</span><small>/100</small></div>
+                    <span class="badge" th:classappend="${h.score >= 65} ? 'success' : (${h.score >= 45} ? 'warning' : 'danger')" th:text="${h.grade}">Good</span>
+                </div>
+                <dl class="lines-list mt">
+                    <div><dt>Average monthly income</dt><dd th:text="${@fmt.whole(h.avgIncome)}">0</dd></div>
+                    <div><dt>Average monthly spending</dt><dd th:text="${@fmt.whole(h.avgExpense)}">0</dd></div>
+                </dl>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-head"><h2>What makes it <b>up</b></h2></div>
+            <div class="factor" th:each="x : ${h.factors}">
+                <div><h3 th:text="${x.name}">Savings rate</h3><span class="value" th:text="${x.value}">value</span></div>
+                <div class="pts"><span th:text="${x.score}">0</span><small th:text="|/${x.max}|">/30</small></div>
+                <div class="progress"><span th:classappend="${x.percent >= 70} ? 'good' : (${x.percent >= 40} ? 'warn' : 'over')" th:style="|width:${x.percent}%|"></span></div>
+                <p class="advice" th:text="${x.advice}">Advice</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
